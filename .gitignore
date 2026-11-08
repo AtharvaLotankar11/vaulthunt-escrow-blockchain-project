@@ -20,3 +20,6 @@ broadcast/
 # OS
 .DS_Store
 Thumbs.db
+
+# Local Anvil addresses (the Sepolia file is committed on purpose)
+contracts/deployments/31337.json
