@@ -164,6 +164,8 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | 2026-11-08 | Gate 0 | forge build, verify folders, check .gitignore, verify no .env | PASS | All tools verified, folders created, OpenZeppelin v5.7.0 installed, no secrets in tracked files |
 | 2026-11-08 | Gate 1 | forge test 33/33, coverage 98.59% lines, slither 0 High (user-run) | PASS | BountyToken, ReputationSBT, PlatformTreasury complete with tests, soulbound verified, no HIGH findings |
 | 2026-11-08 | Gate 2 | forge test 99/99, coverage 99.5% lines, slither 0 High (user-run) | PASS | BountyFactory and BountyEscrow complete, pull-payment pattern, reentrancy-safe |
+| 2026-11-08 | Gate 3 | forge test 176/176, coverage 99.75% lines, slither 0 High (user-run) | PASS | ReportRegistry with commit-reveal, severity locking, badge minting, state machine complete |
+| 2026-11-08 | Gate 4 | forge test 254/254, coverage 99.84% lines, slither 0 High (user-run) | PASS | DisputeCourt with staking, voting, verdict application, tie-break rules complete |
 
 ---
 
@@ -202,6 +204,10 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | 2026-11-08 | 8 | Merge tasks: combine 3 page creations, combine LiveFeed + toast + integration, combine 3 test tasks (11 tasks → 5 tasks) | Reduce task count per phase to ≤10 | 8 |
 | 2026-11-08 | 0,1 | Delete forge init samples (Counter.sol, Counter.t.sol, Counter.s.sol) before Phase 1 work | Clean slate for actual contracts | 1 |
 | 2026-11-08 | Phase 2 | payHunter now only credits; ETH is sent by claimFor or claim | Slither reentrancy-eth High | 3, 4, 5, 7, 8 |
+| 2026-11-08 | Phase 3 | Registry: reveal takes claimedSeverity (5 args); Accepted is folded into Paid and Closed into Refunded; review, reveal and dispute windows are constructor settings; Registry must own ReputationSBT | timeout disputes need a severity to lock; short demo windows | 3,4,5,7,8 |
+| 2026-11-08 | Phase 3 | Revealing a report locks its reward; badge and ETH-push failures never block a payout | protects hunters and tolerates hostile hunter contracts | 5,7,9 |
+| 2026-11-08 | Phase 4 | Hunter pays the dispute fee with payDisputeFee before registry.escalate (approve, payDisputeFee, escalate) | Slither High arbitrary-send-erc20 | 5,7,8 |
+| 2026-11-08 | Phase 4 | Court has no owner; tie after rejection goes to the company, after timeout to the hunter; verification contract is DisputeScenarios | design choice; matches the milestone command | 5,8 |
 
 ---
 
@@ -359,9 +365,9 @@ slither contracts\src\BountyFactory.sol contracts\src\BountyEscrow.sol --filter-
 
 ---
 
-## [ ] Phase 3: ReportRegistry with commit-reveal and tests
+## [x] Phase 3: ReportRegistry with commit-reveal and tests
 
-**Status:** NOT_STARTED
+**Status:** DONE
 
 **Goal:** Implement the ReportRegistry contract that stores report hashes (commit), then CIDs and status (reveal), tracks timestamps for priority, and manages the report state machine. Test commit-reveal flow, duplicate detection, and state transitions.
 
@@ -399,9 +405,9 @@ slither contracts\src\ReportRegistry.sol --filter-paths "test|script"
 
 ---
 
-## [ ] Phase 4: DisputeCourt with staked jury voting and tests
+## [x] Phase 4: DisputeCourt with staked jury voting and tests
 
-**Status:** NOT_STARTED
+**Status:** DONE
 
 **Goal:** Implement the DisputeCourt contract: juror staking in BountyToken, case escalation, commit-reveal voting, majority verdict, reward/slash logic. Test voting scenarios with 3 and 5 jurors, edge cases (ties, abstentions).
 
