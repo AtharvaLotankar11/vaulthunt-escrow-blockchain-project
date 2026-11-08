@@ -97,7 +97,7 @@ export default function NewProgramPage() {
                   />
                 ))}
               </div>
-              {!tiersValid && <p role="alert" className="field-hint text-accent">Each tier must be above 0, at most 100, and not lower than the tier before it.</p>}
+              {!tiersValid && <p role="alert" className="field-hint note-alert">Each tier must be above 0, at most 100, and not lower than the tier before it.</p>}
             </div>
             <TextField
               label="Deposit now (ETH)"
@@ -121,7 +121,7 @@ export default function NewProgramPage() {
                 {busy ? "Working…" : "Create program"}
               </button>
             </div>
-            {error && <p role="alert" className="text-accent">{error}</p>}
+            {error && <p role="alert" className="note-alert">{error}</p>}
           </Card>
         </div>
       </NeedWallet>

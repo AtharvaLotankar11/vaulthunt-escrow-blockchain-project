@@ -169,6 +169,7 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | 2026-11-08 | Gate 5 | forge test 289/289, coverage 99.82% lines, slither 0 High, Deploy and Seed run on Anvil (user-run) | PASS | evidence in SECURITY.md |
 | 2026-11-08 | Phase 6-7 | pnpm lint and build OK; program created, encrypted report submitted, accepted and paid on Anvil (user-run) | PASS | App loads, wallet connects, live chain data, Report #1 Paid, Badge #0, 50 XP verified |
 | 2026-11-08 | Phase 8 | dispute, hidden jury votes, reveal, verdict and payout completed on Anvil through the UI (user-run); automated UI test 39/39 | PASS | Jury room, profile, leaderboard, live feed, demo time-travel complete |
+| 2026-11-08 | Phase 9 | pnpm lint and build OK; automated UI test 42/42 including Demo Mode; layout checked at 1440, 1024, 768 and 390 and keyboard focus checked (user-run) | PASS | not checked in a browser: reduced motion; fonts use fallbacks (A-3), see DESIGN_NOTES.md |
 
 ---
 
@@ -218,6 +219,8 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | 2026-11-08 | Phase 7 | 8th contract ProgramDirectory; reports and profiles via /api/ipfs (local store, Pinata if PINATA_JWT is set); useTx adds 30% gas headroom | contracts had nowhere to store the name and public key; works without any account; juror-draw gas varies | 8,10 |
 | 2026-11-08 | Phase 8 | Built together with Phase 7. Jury room, profile, leaderboard, live feed and demo time-travel with exact jump buttons | user wanted the full multi-page app at once | 9,10 |
 | 2026-11-08 | Phase 8 | Anvil clock read from the pending block; queries never pause when the browser is offline; pages show Loading instead of crashing | found while running the dispute demo | 9,10 |
+| 2026-11-08 | Phase 9 | Framer Motion animations, reduced-motion support, page transitions; /demo Demo Mode plays the full scenario with Anvil accounts and no wallet | polish and presentations | 10,11 |
+| 2026-11-08 | Phase 9 | Alerts are white text with a magenta bar; tablet layouts stack until 1280px; program names shown instead of ids | design checklist: magenta only on bars, dashes and focus | 10 |
 
 ---
 
@@ -665,9 +668,9 @@ pnpm --dir web lint
 
 ---
 
-## [ ] Phase 9: Polish (motion, responsive, accessibility, demo mode) against design.md checklist
+## [x] Phase 9: Polish (motion, responsive, accessibility, demo mode) against design.md checklist
 
-**Status:** NOT_STARTED
+**Status:** DONE
 
 **Goal:** Refine the UI to match design.md quality checklist (section 13): animations via Framer Motion (glass arc float, vault fill, hexagon draw-in, chip stagger, page transitions), responsive layout for tablet and mobile, accessibility (keyboard nav, focus rings, aria labels, reduced-motion), and a demo mode that simulates a full scenario with pre-funded test wallets for presentations.
 
@@ -680,15 +683,15 @@ pnpm --dir web lint
 
 **Tasks:**
 
-- [ ] Add Framer Motion animations: glass arcs (`motion.div` with slow float and rotate, 6-8s loop), vault fill bar (height animates on value change, 1s ease-out), hexagon outlines (stroke-dashoffset draw-in when in viewport, 0.9s), flow chips (sequential reveal with 80ms stagger), page transitions (fade + 12px rise, 0.35s), payout success (lock-open icon animation + glass arc pulse + XP bar fill, 1.2s total)
-- [ ] Test animations with `prefers-reduced-motion`: disable float and shimmer, keep fades
-- [ ] Make layout responsive: tablet (768-1279px) stacks side-by-side layouts, shrinks glass arcs to 60%, mobile (<768px) single column, wider hexagons, chip rows wrap vertically, hide second glass arc, display-xl clamps to 3.5rem minimum (design.md section 10)
-- [ ] Test on 1440px, 1024px, 768px, and 390px viewport widths (browser DevTools)
-- [ ] Add accessibility: every interactive element has visible focus ring (2px magenta outline offset 2px), toasts and countdowns have `aria-live="polite"`, decorative arcs/rings have `aria-hidden="true"`, all status shown with icon + text (not color alone), keyboard-operable vote and review actions (Tab, Enter, Space), transaction errors in plain language (design.md section 11)
-- [ ] Test keyboard navigation: Tab through all pages, confirm focus visible, Enter/Space activate buttons
-- [ ] Create `web/src/app/demo/page.js`: a "Demo Mode" panel with a "Simulate Full Scenario" button; demo mode restricted to local Anvil chain only; runs client-side with pre-funded Anvil accounts (addresses and data, NOT private keys in client code; private keys stay in .env server-side only); simulates: create program, commit report, reveal, accept, pay, show each step with delays and animations, useful for presentations
-- [ ] Run through design.md section 13 checklist: background `#020020`, only 5 core colors, magenta only on bars/dashes/focus, fonts Telegraf + Open Sauce One Medium, headline line-height 1.0, chips square corners 6px magenta bar 60px height, hexagon 1px white outline, glass arcs never cover text, 81px margins scaled, every state has icon + text, reduced-motion tested, responsive tested, fonts/imagery licenses confirmed (or documented)
-- [ ] Document any checklist items NOT met (e.g. custom glass arc images not sourced, fonts not licensed for public use) in `DESIGN_NOTES.md`
+- [x] Add Framer Motion animations: glass arcs (`motion.div` with slow float and rotate, 6-8s loop), vault fill bar (height animates on value change, 1s ease-out), hexagon outlines (stroke-dashoffset draw-in when in viewport, 0.9s), flow chips (sequential reveal with 80ms stagger), page transitions (fade + 12px rise, 0.35s), payout success (lock-open icon animation + glass arc pulse + XP bar fill, 1.2s total)
+- [x] Test animations with `prefers-reduced-motion`: disable float and shimmer, keep fades
+- [x] Make layout responsive: tablet (768-1279px) stacks side-by-side layouts, shrinks glass arcs to 60%, mobile (<768px) single column, wider hexagons, chip rows wrap vertically, hide second glass arc, display-xl clamps to 3.5rem minimum (design.md section 10)
+- [x] Test on 1440px, 1024px, 768px, and 390px viewport widths (browser DevTools)
+- [x] Add accessibility: every interactive element has visible focus ring (2px magenta outline offset 2px), toasts and countdowns have `aria-live="polite"`, decorative arcs/rings have `aria-hidden="true"`, all status shown with icon + text (not color alone), keyboard-operable vote and review actions (Tab, Enter, Space), transaction errors in plain language (design.md section 11)
+- [x] Test keyboard navigation: Tab through all pages, confirm focus visible, Enter/Space activate buttons
+- [x] Create `web/src/app/demo/page.js`: a "Demo Mode" panel with a "Simulate Full Scenario" button; demo mode restricted to local Anvil chain only; runs client-side with pre-funded Anvil accounts (addresses and data, NOT private keys in client code; private keys stay in .env server-side only); simulates: create program, commit report, reveal, accept, pay, show each step with delays and animations, useful for presentations
+- [x] Run through design.md section 13 checklist: background `#020020`, only 5 core colors, magenta only on bars/dashes/focus, fonts Telegraf + Open Sauce One Medium, headline line-height 1.0, chips square corners 6px magenta bar 60px height, hexagon 1px white outline, glass arcs never cover text, 81px margins scaled, every state has icon + text, reduced-motion tested, responsive tested, fonts/imagery licenses confirmed (or documented)
+- [x] Document any checklist items NOT met (e.g. custom glass arc images not sourced, fonts not licensed for public use) in `DESIGN_NOTES.md`
 
 **Exit Criteria:**
 - Animations work and enhance the "alive" feel without being distracting

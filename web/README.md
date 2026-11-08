@@ -15,6 +15,7 @@ Next.js (App Router, JavaScript), Tailwind v4, wagmi + viem. Phases 6 to 8 of `t
 | `/jury`, `/jury/[caseId]` | stake and leave the pool, vote hidden then reveal, resolve |
 | `/profile/[address]` | soulbound badge, level, XP |
 | `/leaderboard` | top hunters |
+| `/demo` | Demo Mode: plays a whole scenario by itself on the local chain (no wallet needed) |
 
 On the local chain a **Demo: time travel** bar appears at the bottom: it moves the chain clock forward so review deadlines and jury windows pass in seconds.
 

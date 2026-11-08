@@ -104,7 +104,7 @@ export default function SubmitPage() {
                 options={SEVERITY.map((label, i) => ({ value: String(i), label: `${label}${program ? ` (${eth(program.rewards[i])} ETH)` : ""}` }))}
                 hint="This is the reward that gets locked for you. The company decides the final severity."
               />
-              {cannotCover && <p role="alert" className="text-accent">This vault has {eth(program.unlocked)} ETH free, not enough to lock that reward right now. Choose a lower severity or ask the company to add funds.</p>}
+              {cannotCover && <p role="alert" className="note-alert">This vault has {eth(program.unlocked)} ETH free, not enough to lock that reward right now. Choose a lower severity or ask the company to add funds.</p>}
             </Card>
 
             <Stepper steps={LABELS.map((label, i) => ({ label, state: state(i === 1 || i === 2 ? i : i) }))} />
@@ -113,7 +113,7 @@ export default function SubmitPage() {
                 {busy ? "Working…" : "Commit and submit"}
               </button>
             </div>
-            {error && <p role="alert" className="text-accent">{error} You can continue later from My reports.</p>}
+            {error && <p role="alert" className="note-alert">{error} You can continue later from My reports.</p>}
           </div>
         </NeedWallet>
       )}

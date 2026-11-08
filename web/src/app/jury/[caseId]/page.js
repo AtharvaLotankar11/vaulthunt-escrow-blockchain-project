@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { keccak256, encodeAbiParameters, parseAbiParameters } from "viem";
 import { useAccount, useChainId } from "wagmi";
+import { ProgramLabel } from "@/components/programs/ProgramLabel";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
 import { Countdown } from "@/components/ui/Countdown";
@@ -70,10 +71,10 @@ export default function CasePage() {
         <Link href="/jury" className="btn btn--ghost">All cases</Link>
       </PageHeader>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 xl:grid-cols-2">
         <Card className="grid gap-3">
           <h2 className="field-label">The dispute</h2>
-          <p>Report #{courtCase.reportId} in program #{report?.programId}. Hunter {shortAddress(courtCase.hunter)} against the company.</p>
+          <p>Report #{courtCase.reportId} in {report ? <ProgramLabel programId={report.programId} /> : "…"}. Hunter {shortAddress(courtCase.hunter)} against the company.</p>
           <p className="text-sm text-muted">{courtCase.byTimeout ? "Opened because the company did not answer in time." : "Opened because the hunter disputes a rejection."}</p>
           {report && <p>The hunter claims <strong>{SEVERITY[report.claimedSeverity]}</strong> severity.</p>}
           <div className="border border-white/15 p-4">
@@ -129,7 +130,7 @@ export default function CasePage() {
                 stored ? (
                   <div><button type="button" className="btn" disabled={act.busy} onClick={() => call("Reveal vote", "revealVote", [BigInt(caseId), stored.hunterWins, stored.salt])}>Reveal my vote ({stored.hunterWins ? "hunter" : "company"})</button></div>
                 ) : (
-                  <p role="alert" className="text-accent">This browser does not hold your vote and salt, so it cannot reveal. You will lose {bbt(court?.slashPerJuror)} BBT if you do not reveal.</p>
+                  <p role="alert" className="note-alert">This browser does not hold your vote and salt, so it cannot reveal. You will lose {bbt(court?.slashPerJuror)} BBT if you do not reveal.</p>
                 )
               )}
               {mine.revealed && <p className="text-muted">You voted for the {mine.hunterWins ? "hunter" : "company"}. Waiting for the others.</p>}
@@ -141,11 +142,11 @@ export default function CasePage() {
 
       {canResolve && (
         <div className="mt-6">
-          <button type="button" className="btn btn--accent" disabled={act.busy} onClick={() => call("Resolve case", "resolveCase", [BigInt(caseId)])}>Resolve the case</button>
+          <button type="button" className="btn" disabled={act.busy} onClick={() => call("Resolve case", "resolveCase", [BigInt(caseId)])}>Resolve the case</button>
           <p className="field-hint">Anyone can do this once everyone revealed or the reveal window ended. The verdict pays the winner at once.</p>
         </div>
       )}
-      {act.error && <p role="alert" className="mt-4 text-accent">{act.error}</p>}
+      {act.error && <p role="alert" className="mt-4 note-alert">{act.error}</p>}
     </section>
   );
 }

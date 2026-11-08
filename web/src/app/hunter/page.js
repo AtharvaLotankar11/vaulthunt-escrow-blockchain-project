@@ -40,7 +40,6 @@ export default function HunterPage() {
                 <HunterReport
                   key={r.id}
                   report={r}
-                  programName={`Program #${r.programId}`}
                   now={now}
                   registryConfig={registryConfig}
                   courtConfig={courtConfig}

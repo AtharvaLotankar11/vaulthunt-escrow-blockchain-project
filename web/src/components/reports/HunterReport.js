@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useAccount } from "wagmi";
+import { ProgramLabel } from "@/components/programs/ProgramLabel";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
 import { DemoJump } from "@/components/layout/DemoJump";
+import { PayoutBurst } from "@/components/reports/PayoutBurst";
 import { Countdown } from "@/components/ui/Countdown";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { S, SEVERITY, awaitingCompany } from "@/lib/chain";
@@ -18,7 +20,7 @@ import { useEscalate, useReveal } from "@/lib/useFlows";
 import { useTx } from "@/lib/useTx";
 
 /** One report from the hunter's point of view, with the next action that makes sense. */
-export function HunterReport({ report, programName, now, registryConfig, courtConfig, caseId }) {
+export function HunterReport({ report, now, registryConfig, courtConfig, caseId }) {
   const tx = useTx();
   const { chainId, book } = useBook();
   const { address } = useAccount();
@@ -49,7 +51,7 @@ export function HunterReport({ report, programName, now, registryConfig, courtCo
           <StatusChip status={report.status} />
           {report.status >= S.Revealed && <Chip size="sm">Claims {SEVERITY[report.claimedSeverity]}</Chip>}
         </div>
-        <span className="text-sm text-muted">{programName}</span>
+        <span className="text-sm text-muted"><ProgramLabel programId={report.programId} /></span>
       </div>
 
       {report.status === S.Committed && (
@@ -62,7 +64,7 @@ export function HunterReport({ report, programName, now, registryConfig, courtCo
               </button>
             </div>
           ) : (
-            <p role="alert" className="text-accent">This browser does not hold the report text and salt for this commit, so it cannot be revealed from here.</p>
+            <p role="alert" className="note-alert">This browser does not hold the report text and salt for this commit, so it cannot be revealed from here.</p>
           )}
         </div>
       )}
@@ -105,7 +107,7 @@ export function HunterReport({ report, programName, now, registryConfig, courtCo
 
       {report.status === S.Paid && (
         <div className="grid gap-3">
-          <p className="text-muted">Paid at {SEVERITY[report.paidSeverity]}. Reputation updated.</p>
+          <div className="flex items-center gap-4"><PayoutBurst /><p className="text-muted">Paid at {SEVERITY[report.paidSeverity]}. Reputation updated.</p></div>
           {claimable > 0n && (
             <div>
               <button type="button" className="btn btn--sm" disabled={act.busy} onClick={() => act.run(() => tx({ label: "Claim reward", address: report.escrow, abi: abis.BountyEscrow, functionName: "claim" }))}>
@@ -118,7 +120,7 @@ export function HunterReport({ report, programName, now, registryConfig, courtCo
       )}
 
       {report.status === S.Refunded && <p className="text-muted">Closed. The reward went back to the company.</p>}
-      {act.error && <p role="alert" className="text-accent">{act.error}</p>}
+      {act.error && <p role="alert" className="note-alert">{act.error}</p>}
     </Card>
   );
 }

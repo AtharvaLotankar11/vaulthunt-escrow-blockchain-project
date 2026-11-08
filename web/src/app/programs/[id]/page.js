@@ -31,7 +31,7 @@ function OwnerTools({ program, profile }) {
   const [description, setDescription] = useState(profile?.description ?? "");
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
+    <div className="grid gap-6 xl:grid-cols-2">
       <Card className="grid gap-4">
         <h2 className="display-m !text-3xl">Your vault</h2>
         <TextField label="Amount (ETH)" type="number" min="0" step="0.1" value={amount} onChange={(e) => setAmount(e.target.value)} />
@@ -44,7 +44,7 @@ function OwnerTools({ program, profile }) {
           </button>
         </div>
         <p className="field-hint">You can only withdraw money that is not locked for a report. Free now: {eth(program.unlocked)} ETH.</p>
-        {funds.error && <p role="alert" className="text-accent">{funds.error}</p>}
+        {funds.error && <p role="alert" className="note-alert">{funds.error}</p>}
       </Card>
 
       <Card className="grid gap-4">
@@ -67,7 +67,7 @@ function OwnerTools({ program, profile }) {
           </button>
         </div>
         <p className="field-hint">Publishes your name, scope and PUBLIC encryption key. Hunters cannot submit until this exists.</p>
-        {publish.error && <p role="alert" className="text-accent">{publish.error}</p>}
+        {publish.error && <p role="alert" className="note-alert">{publish.error}</p>}
       </Card>
     </div>
   );
@@ -99,7 +99,7 @@ export default function ProgramPage() {
         )}
       </PageHeader>
 
-      <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+      <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
         <div className="gradient-panel">
           <p className="text-sm uppercase text-muted">Vault balance</p>
           <p className="display-m mt-2">{eth(program.balance)} ETH</p>

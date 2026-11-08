@@ -66,7 +66,7 @@ export function CompanyReport({ report, program, now, registryConfig }) {
       {report.status >= S.Revealed && (
         <div>
           <button type="button" className="btn btn--ghost btn--sm" disabled={reader.busy} onClick={read}>{reader.busy ? "Decrypting…" : view ? "Read again" : "Read report"}</button>
-          {reader.error && <p role="alert" className="mt-2 text-accent">{reader.error}</p>}
+          {reader.error && <p role="alert" className="mt-2 note-alert">{reader.error}</p>}
           {view && (
             <div className="mt-4 border border-white/15 p-4">
               <p className="text-sm uppercase">{view.verified ? "✓ Matches the hash the hunter committed" : "✗ Does NOT match the committed hash"}</p>
@@ -101,7 +101,7 @@ export function CompanyReport({ report, program, now, registryConfig }) {
       )}
       {report.status === S.Disputed && <p className="text-sm text-muted">With the jury. The reward stays locked until they decide.</p>}
       {report.status === S.Paid && <p className="text-sm text-muted">Paid at {SEVERITY[report.paidSeverity]}.</p>}
-      {act.error && <p role="alert" className="text-accent">{act.error}</p>}
+      {act.error && <p role="alert" className="note-alert">{act.error}</p>}
     </Card>
   );
 }

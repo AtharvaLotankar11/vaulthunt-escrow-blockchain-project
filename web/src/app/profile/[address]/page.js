@@ -1,7 +1,9 @@
 "use client";
 
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { ProgramLabel } from "@/components/programs/ProgramLabel";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
 import { HexPanel } from "@/components/ui/HexPanel";
@@ -33,7 +35,7 @@ export default function ProfilePage() {
     <section className="page-x py-12">
       <PageHeader chip="Hunter profile" title={shortAddress(address)} />
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr] lg:items-center">
+      <div className="grid gap-6 xl:grid-cols-[1fr_1.2fr] xl:items-center">
         <HexPanel glow className="mx-auto w-full max-w-md" innerClassName="py-14 text-center">
           <p className="text-sm uppercase text-muted">Soulbound badge</p>
           <p className="display-m mt-2">{LEVELS[level - 1]}</p>
@@ -44,7 +46,7 @@ export default function ProfilePage() {
         <Card className="grid gap-4">
           <h2 className="field-label">Progress</h2>
           <div className="vault" role="img" aria-label={`${progress.toFixed(0)} percent of the way to the next level`}>
-            <div className="vault__locked" style={{ width: `${progress}%` }} />
+            <motion.div className="vault__locked" initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ duration: 1, ease: "easeOut" }} />
           </div>
           <p className="text-muted">{next ? `${next - xp} XP to ${LEVELS[level]}` : "Top level reached."}</p>
           <p>{mine.length} {mine.length === 1 ? "report" : "reports"} · {paid} paid</p>
@@ -63,7 +65,7 @@ export default function ProfilePage() {
               {mine.map((r) => (
                 <tr key={r.id}>
                   <td>{r.id}</td>
-                  <td><Link className="underline" href={`/programs/${r.programId}`}>#{r.programId}</Link></td>
+                  <td><Link className="underline" href={`/programs/${r.programId}`}><ProgramLabel programId={r.programId} /></Link></td>
                   <td>{r.status >= S.Revealed ? SEVERITY[r.claimedSeverity] : "hidden"}</td>
                   <td><StatusChip status={r.status} /></td>
                 </tr>

@@ -38,3 +38,28 @@ Tags follow design.md: **MEASURED** (exact), **ESTIMATED**, **EXTENSION**.
 - The chain's own clock drives all countdowns (so the demo time-travel bar works).
 - Not yet tested in a real browser by the author's tooling: responsive layouts, focus order, reduced motion. Check by eye.
 - Known gaps: no tests for the visual layer; no Pinata test (needs a key); jurors read only the hunter's public summary (documented limitation).
+
+## Phase 9: polish (what was done, and the design.md section 13 checklist)
+
+Done in code and covered by the automated test where possible:
+- Motion (Framer Motion): glass arcs float and rotate (7s loop), vault bars fill over 1s, hexagon outlines draw in when scrolled into view (0.9s), flow chips appear one by one (80ms stagger), page transitions (fade plus 12px rise, 0.35s), a lock-opens and arc-pulse burst on a paid report, the XP bar fills on the profile.
+- Reduced motion: `MotionConfig reducedMotion="user"` plus a CSS rule. People who prefer reduced motion get no float or rotation; fades stay.
+- Layout: two-column layouts stack until 1280px; the glass arcs shrink on tablets, the second arc is hidden on phones, and arcs sit in the corners, never beside the title; chips are 48px high and rows wrap on phones; tables scroll inside their own box.
+- Accessibility: one visible focus style (2px magenta outline, 2px offset) on everything; toasts and countdowns are announced politely (`aria-live="polite"`); decorative art is `aria-hidden`; every status is icon plus text plus tone; all actions are real buttons, links, radios and selects, so Tab, Enter and Space work; errors are plain language.
+- Demo Mode (`/demo`): plays a full scenario by itself on the local chain with Anvil's built-in accounts, no wallet needed.
+- Magenta is now used only on bars, dashes, outlines and the focus ring (error text became white with a magenta bar).
+
+| Checklist item | Status |
+|---|---|
+| Background #020020, five core colors plus gradients | Met (art uses extra sheen colors; art only) |
+| Magenta only on bars, dashes, focus | Met (logo mark and text-selection color are the only other uses) |
+| Telegraf and Open Sauce One, Medium only | NOT MET: fallback fonts until licences are confirmed (assumption A-3) |
+| Headline line-height 1.0 | Met |
+| Chip: square corners, magenta bar, 60px (48px on phones) | Met |
+| Hexagon 1px white outline | Met |
+| Glass arcs never cover text | Met by placement; confirm by eye at 1440, 1024, 768, 390 |
+| 81px margins scaled | Met (fluid 20px to 81px) |
+| Every state has icon plus text | Mostly met; the wallet button states are text only |
+| Reduced motion | Implemented; confirm by eye (DevTools, Rendering, emulate prefers-reduced-motion) |
+| Responsive on 4 widths | Implemented by code; NOT yet verified in a browser by the author's tooling |
+| Fonts and imagery licences | Fonts pending; glass arc is original SVG; no third-party imagery |

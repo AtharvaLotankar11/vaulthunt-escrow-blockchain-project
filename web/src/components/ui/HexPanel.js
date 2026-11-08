@@ -1,9 +1,12 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { useId } from "react";
 import { cn } from "@/lib/cn";
 
 /**
- * Elongated hexagon with a 1px white hairline outline (design.md 5.4).
- * The outline is an SVG polygon (a CSS clip-path would cut a border off).
+ * Elongated hexagon with a 1px white hairline outline (design.md 5.4). The outline DRAWS IN when it
+ * scrolls into view (0.9s). The outline is an SVG polygon (a CSS clip-path would cut a border off).
  * glow = the bottom half fades into electric blue.
  */
 export function HexPanel({ glow = false, inset = 13, className, innerClassName, children }) {
@@ -26,12 +29,16 @@ export function HexPanel({ glow = false, inset = 13, className, innerClassName, 
             </linearGradient>
           </defs>
         )}
-        <polygon
+        <motion.polygon
           points={points}
           fill={glow ? `url(#${gradientId})` : "none"}
           stroke="#ffffff"
           strokeWidth="1"
           vectorEffect="non-scaling-stroke"
+          initial={{ pathLength: 0 }}
+          whileInView={{ pathLength: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.9, ease: "easeInOut" }}
         />
       </svg>
       <div className={cn("relative px-[16%] py-10 sm:py-12", innerClassName)}>{children}</div>

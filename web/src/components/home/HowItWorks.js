@@ -14,7 +14,7 @@ export function HowItWorks() {
     <section id="how" className="page-x py-24">
       <Chip>How it works</Chip>
 
-      <div className="mt-10 grid gap-12 lg:grid-cols-2 lg:items-center">
+      <div className="mt-10 grid gap-12 xl:grid-cols-2 xl:items-center">
         <h2 className="display-m">
           Lock it.
           <br />

@@ -35,7 +35,7 @@ export function DemoJump({ to, children }) {
     <div className="mt-3 flex flex-wrap items-center gap-3">
       <button type="button" className="btn btn--ghost btn--sm" disabled={busy} onClick={go}>{children}</button>
       <span className="text-xs text-muted">Demo control, local chain only</span>
-      {error && <span role="alert" className="text-sm text-accent">{error}</span>}
+      {error && <span role="alert" className="text-sm note-alert">{error}</span>}
     </div>
   );
 }

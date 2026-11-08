@@ -43,7 +43,7 @@ export function DevTools() {
             {label}
           </button>
         ))}
-        {error && <span role="alert" className="text-sm text-accent">{error}</span>}
+        {error && <span role="alert" className="text-sm note-alert">{error}</span>}
       </div>
     </section>
   );

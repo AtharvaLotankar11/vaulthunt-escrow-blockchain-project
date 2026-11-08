@@ -11,3 +11,6 @@ Use ONE browser and http://localhost:3000 throughout (secrets are stored per sit
 5. **Jury**: switch to the three drawn jurors (the case page lists them): each commits a hidden vote. Click +6 min in the Demo bar. Each reveals. Anyone clicks Resolve. The hunter is paid at once; jurors share the fee.
 6. **Timeout**: hunter submits a third report; company does nothing; click +11 min; hunter clicks "The company did not answer".
 7. Close on Leaderboard and the live ticker, then show `contracts\SECURITY.md` (tests, fuzzing, invariants, the bugs found and fixed).
+
+## Fastest way to show everything (about 2 minutes)
+Open `/demo` and click "Simulate full scenario". It runs the whole story by itself with a pause between steps: vault, encrypted report, payment, rejection, jury dispute, hidden votes, reveal, verdict. Then click through Programs, Hunter, Jury and Leaderboard to show the result on-chain. It needs the Seed script to have run (the jury must exist). Afterwards, if MetaMask hangs: Settings, Advanced, Clear activity tab data.

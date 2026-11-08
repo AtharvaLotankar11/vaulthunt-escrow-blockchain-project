@@ -12,7 +12,7 @@ export function LiveFeed() {
       <div className="ticker__track gap-12 text-sm text-muted">
         {items.map((item, i) => (
           <span key={`${item.key}-${i}`} className="whitespace-nowrap">
-            <span aria-hidden="true" className="mr-3 text-accent">✳</span>
+            <span aria-hidden="true" className="mr-3 text-white/50">✳</span>
             {item.text}
           </span>
         ))}

@@ -63,7 +63,7 @@ export function JurorPanel() {
       {needsStake && juror.balance < topUp && <p className="field-hint">You need {bbt(topUp)} BBT first. Use the faucet above.</p>}
       {juror.pending && <p className="field-hint">Cooldown: withdraw possible <Countdown to={juror.unstakeAt} now={now} passedLabel="now" /> (cooldown is {duration(config.unstakeCooldown)}).</p>}
       {juror.active > 0 && <p className="field-hint">You cannot leave while you sit on an open case.</p>}
-      {act.error && <p role="alert" className="text-accent">{act.error}</p>}
+      {act.error && <p role="alert" className="note-alert">{act.error}</p>}
     </Card>
   );
 }

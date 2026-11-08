@@ -14,6 +14,7 @@ const LINKS = [
   { href: "/company", label: "Company" },
   { href: "/jury", label: "Jury" },
   { href: "/leaderboard", label: "Leaderboard" },
+  { href: "/demo", label: "Demo" },
 ];
 
 export function Nav() {
@@ -36,7 +37,7 @@ export function Nav() {
               key={link.href}
               href={link.href}
               aria-current={active ? "page" : undefined}
-              className={cn("whitespace-nowrap border-b-2 px-3 py-2 text-sm uppercase hover:text-accent", active ? "border-accent" : "border-transparent")}
+              className={cn("whitespace-nowrap border-b-2 px-3 py-2 text-sm uppercase hover:underline", active ? "border-accent" : "border-transparent")}
             >
               {link.label}
             </Link>

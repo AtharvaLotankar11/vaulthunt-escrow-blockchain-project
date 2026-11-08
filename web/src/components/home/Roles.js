@@ -16,7 +16,7 @@ export function Roles() {
             <NotchedCard className="h-full p-8 pb-14">
               <h2 className="display-m !text-5xl">{role.title}</h2>
               <p className="mt-4 text-muted">{role.text}</p>
-              <p className="mt-6 text-sm uppercase text-accent">Open →</p>
+              <p className="mt-6 text-sm uppercase underline">Open →</p>
             </NotchedCard>
           </Link>
         ))}

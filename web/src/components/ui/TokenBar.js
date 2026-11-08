@@ -21,7 +21,7 @@ export function TokenBar() {
       <button type="button" className="btn btn--ghost btn--sm" disabled={faucet.busy} onClick={() => faucet.run(() => tx({ label: "Get test BBT", address: book.BountyToken, abi: abis.BountyToken, functionName: "faucet" }))}>
         Get 100 test BBT
       </button>
-      {faucet.error && <span role="alert" className="text-sm text-accent">{faucet.error}</span>}
+      {faucet.error && <span role="alert" className="text-sm note-alert">{faucet.error}</span>}
     </div>
   );
 }
