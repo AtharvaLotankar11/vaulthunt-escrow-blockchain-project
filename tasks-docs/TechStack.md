@@ -1,6 +1,6 @@
 # TechStack.md: Decentralized Escrow System for Bug Bounty Hunters
 
-**Companion to:** PRD.md (v0.1)
+**Companion to:** PRD.md (v0.2)
 **Principle:** one tool per job, no overlap. Every tool below exists because a feature in the PRD needs it. If a tool has no feature to serve, it isn't here.
 
 ---
@@ -56,15 +56,17 @@ This shows each tool doing its part, in order.
 
 | Step | What happens | Tool doing the work |
 |---|---|---|
-| 1 | Hunter writes report, clicks Submit | Next.js + shadcn/ui |
-| 2 | Report is encrypted in the browser (AES key, wrapped for the company's public key) | Web Crypto |
-| 3 | Encrypted file is uploaded; a CID (file address) comes back | Pinata / IPFS |
-| 4 | Hunter signs `commit(hash)` then later `reveal(cid, salt)` | wagmi + viem + MetaMask |
-| 5 | `ReportRegistry` stores hash and timestamp, emits an event | Solidity on Sepolia |
-| 6 | Company's dashboard updates instantly from the event | viem event watching |
-| 7 | Company clicks Accept; `BountyEscrow` pays the hunter | wagmi, then Solidity |
-| 8 | Vault animation plays, XP bar rises, badge minted | Framer Motion, `ReputationSBT` |
-| 9 | If disputed: `DisputeCourt` runs the jury vote | Solidity, with live UI via events |
+| 1 | Hunter writes the report, clicks Submit | Next.js + shadcn/ui |
+| 2 | Browser computes `contentHash` and `commitHash = keccak256(abi.encode(contentHash, salt, hunter))` | viem (keccak256) |
+| 3 | Hunter signs `commitReport(programId, commitHash)`; Registry stores hash and timestamp, emits an event | wagmi + viem + MetaMask, then Solidity |
+| 4 | Report is encrypted in the browser (AES key, wrapped for the company's public key) | Web Crypto |
+| 5 | Encrypted file is uploaded; a CID (file address) comes back | Pinata / IPFS |
+| 6 | Hunter signs `revealReport(reportId, cid, contentHash, salt)`; contract recomputes the hash with `msg.sender` | wagmi + viem, then Solidity |
+| 7 | Company's dashboard updates instantly from the event | viem event watching |
+| 8 | Company decrypts, checks `keccak256(plaintext) == contentHash`, then calls `acceptReport` on the **Registry** (the only contract the company calls) | Web Crypto, wagmi |
+| 9 | Registry pays the hunter through `BountyEscrow` and updates the badge | Solidity (`BountyEscrow`, `ReputationSBT`) |
+| 10 | Vault animation plays, XP bar rises | Framer Motion |
+| 11 | If rejected or the deadline passes: hunter calls `escalate` / `escalateAfterTimeout`; `DisputeCourt` runs the jury vote and calls `Registry.applyVerdict` | Solidity, with live UI via events |
 
 ---
 
@@ -199,7 +201,7 @@ NEXT_PUBLIC_WALLETCONNECT_ID=
 |---|---|
 | 7 smart contracts | Solidity + OpenZeppelin |
 | Commit-reveal and private reports | Web Crypto + IPFS + `ReportRegistry` |
-| Automatic payout | `BountyEscrow` via wagmi transactions |
+| Automatic payout | `ReportRegistry.acceptReport` (company calls the Registry), paying through `BountyEscrow` |
 | Live, game-like UI | Next.js + Framer Motion + viem events |
 | Soulbound reputation | OpenZeppelin ERC-721 with transfer override |
 | Juror staking and slashing | `BountyToken` (ERC-20) + `DisputeCourt` |

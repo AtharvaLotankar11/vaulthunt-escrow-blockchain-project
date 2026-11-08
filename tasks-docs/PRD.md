@@ -2,7 +2,7 @@
 
 **Working title:** VaultHunt (rename freely)
 **Course:** Blockchain Technology (Sem VII), group project
-**Version:** 0.1 (draft for team discussion)
+**Version:** 0.2 (design decisions D1 to D4 applied on 2026-11-08; see sections 6, 7, 12)
 **Target network:** Ethereum Sepolia testnet (local Anvil/Hardhat for development). No real money.
 
 ---
@@ -68,28 +68,41 @@ A platform where companies lock bounty rewards in smart contracts, hackers submi
 
 ### 6.1 Happy path
 ```
-Company: createProgram + deposit ETH  ->  funds locked in its own Escrow
-Hunter : commitReport(hash)           ->  timestamp & priority locked
-Hunter : revealReport(encrypted CID)  ->  company can now read it
-Company: acceptReport(severity)       ->  Escrow pays hunter automatically
-System : mints/upgrades hunter's Reputation badge
+Company: createProgram + deposit ETH  ->  funds sit in the program's own Escrow
+Hunter : (in browser) contentHash = keccak256(report bytes)
+         commitHash  = keccak256(abi.encode(contentHash, salt, hunterAddress))
+Hunter : commitReport(programId, commitHash)  ->  timestamp & priority locked
+Hunter : (in browser) encrypt report, upload to IPFS, get the CID
+Hunter : revealReport(reportId, cid, contentHash, salt)
+         contract recomputes commitHash with msg.sender and must match
+Company: decrypts the report and checks keccak256(plaintext) == contentHash
+Company: startReview(reportId), then acceptReport(reportId, severity) on the Registry
+Registry: pays the hunter through the Escrow and updates the Reputation badge
 ```
+
+**Order matters:** commit first, then encrypt and upload, then reveal. The CID does not exist before the upload, so the commit hash is built from the report's content hash, not from the CID.
 
 ### 6.2 Dispute path
 ```
-Company rejects (or ignores for N days)
-Hunter : escalate(stake dispute fee)
-System : picks N jurors from the staked pool
+Company calls rejectReport on the Registry
+   OR the review deadline passes with no company action
+Hunter : escalate(reportId) after a rejection, or escalateAfterTimeout(reportId)
+         once reviewDeadline has passed (a contract cannot trigger itself,
+         so someone must make this call; the hunter or anyone may)
+Registry: forwards the case to DisputeCourt (dispute fee staked in BBT)
+Court  : picks N jurors (N = 3 for the demo) from the staked pool
 Jurors : commit vote -> reveal vote
-System : majority wins; funds go to hunter or back to company
-         jurors who voted with majority are rewarded, others slashed
+Court  : majority wins and calls Registry.applyVerdict(reportId, hunterWins)
+Registry: pays the hunter or refunds the company through the Escrow
+Court  : jurors who voted with the majority are rewarded, others slashed
 ```
 
 ### 6.3 Report state machine
 ```
 Committed -> Revealed -> UnderReview -> Accepted -> Paid
                               |-> Rejected -> (Closed | Disputed)
-                              |-> Timeout  -> Disputed
+                              |-> Timeout (after reviewDeadline, someone calls
+                                  escalateAfterTimeout) -> Disputed
 Disputed -> Voting -> Resolved -> Paid | Refunded
 ```
 
@@ -101,34 +114,38 @@ Disputed -> Voting -> Resolved -> Paid | Refunded
 |---|---|---|---|
 | 1 | **BountyToken (BBT)** | ERC-20 | Platform token used for juror staking, dispute fees, governance weight. Faucet function for testnet demo. |
 | 2 | **BountyFactory** | Factory + EIP-1167 minimal proxy clones | Creates a new Escrow per program cheaply, keeps a registry of all programs. |
-| 3 | **BountyEscrow** | Clone instance, ReentrancyGuard, pull-payment | Holds one program's funds. Stores severity tiers (Low/Med/High/Critical payout %). Releases, refunds, or freezes funds. |
-| 4 | **ReportRegistry** | Commit-reveal | Stores report hash, timestamp, encrypted-file pointer (IPFS CID), status. Resolves duplicates by earliest commit. |
-| 5 | **DisputeCourt** | Staked jury, commit-reveal voting, slashing | Handles escalations: juror selection, voting, result, rewards and penalties. |
-| 6 | **ReputationSBT** | ERC-721 *soulbound* (non-transferable) | Hunter level badges (Rookie, Hacker, Elite, Legend). Metadata updates with accepted reports and severity. |
+| 3 | **BountyEscrow** | Clone instance (initialize(), not a constructor), ReentrancyGuard, pull-payment | Holds one program's funds. Stores severity tiers (Low/Med/High/Critical payout %). Locks, pays, or refunds, but only when called by the Registry. |
+| 4 | **ReportRegistry** | Commit-reveal, single orchestrator | Stores commit hash, timestamp, encrypted-file pointer (IPFS CID), content hash, status. Resolves duplicates by earliest commit. The program owner accepts or rejects through it; it pays through the Escrow, updates the badge, and forwards disputes to the Court. |
+| 5 | **DisputeCourt** | Staked jury, commit-reveal voting, slashing | Handles escalations: juror selection, voting, rewards and penalties. Its only effect on money is calling Registry.applyVerdict. |
+| 6 | **ReputationSBT** | ERC-721 *soulbound* (non-transferable) | Hunter level badges (Rookie, Hacker, Elite, Legend). Updated by the Registry (manager role) with accepted reports and severity. |
 | 7 | **PlatformTreasury** | Access-controlled vault | Collects small platform fee and slashed stakes; funds juror rewards; owned by multisig or timelock for demo. |
 
 ### Contract interaction map
 ```
                  +----------------+
-                 |  BountyToken   |<-------- stake / fees --------+
-                 +----------------+                               |
-                        ^                                         |
-                        | stake                                   |
- Company --> BountyFactory --clones--> BountyEscrow <--pay/refund-+--- DisputeCourt
-                 |                         ^   |                       ^   |
-                 | registers               |   | on accept             |   | verdict
-                 v                         |   v                       |   v
-            ReportRegistry <---status------+  ReputationSBT        PlatformTreasury
-                 ^
-                 |
-               Hunter
+                 |  BountyToken   |<---- stake / dispute fees ---- jurors, hunters
+                 +----------------+
+                        ^ stake
+                        |
+ Company --> BountyFactory --clones--> BountyEscrow
+                 |                         ^
+                 | registers               | lock / pay / refund (Registry ONLY)
+                 v                         |
+ Hunter --> ReportRegistry ----------------+----> ReputationSBT (badge update)
+                 ^   |
+   applyVerdict  |   | escalate
+                 |   v
+              DisputeCourt ----rewards / slashes----> PlatformTreasury
+
+ Company calls Registry only (startReview, acceptReport, rejectReport),
+ never the Escrow directly. Court never touches the Escrow.
 ```
 
 ### Key rules per contract (short)
-- **Escrow:** funds can leave only through `payHunter`, `refundCompany`, or a Court-ordered resolution. Uses pull-payments and a reentrancy guard. Owner cannot withdraw locked funds mid-report.
-- **ReportRegistry:** `commit(hash)` first, `reveal(cid, salt)` later. Contract checks `hash == keccak256(cid, salt, hunter)`. Binding the hunter address prevents copy-paste theft.
-- **DisputeCourt:** jurors must hold minimum staked BBT; votes are hidden until reveal phase to avoid herd voting.
-- **ReputationSBT:** overrides transfer logic so tokens cannot be moved (soulbound). Level derives from on-chain accepted count and severity weight.
+- **Escrow:** an EIP-1167 clone set up once with `initialize(registry, owner)`. Only the Registry address may call `lock`, `payHunter`, `refundCompany`. The company may deposit, and withdraw only unlocked funds. Uses pull-payments and a reentrancy guard.
+- **ReportRegistry:** `commitReport(programId, commitHash)` first; later `revealReport(reportId, cid, contentHash, salt)`. The contract checks `commitHash == keccak256(abi.encode(contentHash, salt, msg.sender))`, which binds the hunter address and prevents copy-paste theft. The program owner calls `startReview`, `acceptReport(reportId, severity)`, `rejectReport(reportId)`. After `reviewDeadline` anyone may call `escalateAfterTimeout(reportId)`. Only the Court may call `applyVerdict(reportId, hunterWins)`.
+- **DisputeCourt:** jurors must hold minimum staked BBT; votes are hidden until the reveal phase. Registry and Court reference each other, so they are linked once at deploy time with one-time owner-only setters (documented in SECURITY.md).
+- **ReputationSBT:** overrides the ERC-721 `_update` hook (OpenZeppelin v5) so tokens can be minted but never transferred. Level derives from on-chain accepted count and severity weight.
 
 ---
 
@@ -149,7 +166,7 @@ Disputed -> Voting -> Resolved -> Paid | Refunded
 - Hunter profile page with badge, earnings, and accepted-report timeline.
 - Global leaderboard (top hunters, top paying programs).
 - Notification toasts on every on-chain event.
-- Auto-escalation when the company misses the review deadline.
+- One-click escalation after the review deadline passes (a contract cannot call itself, so the hunter or anyone triggers `escalateAfterTimeout`).
 - Top-up and extend a program.
 
 ### 8.3 Nice-to-have (stretch)
@@ -227,6 +244,7 @@ The product must *feel alive*, not like a form on a page.
 | Front-running a reveal | Commit-reveal scheme |
 | Reentrancy on payout | Checks-effects-interactions, ReentrancyGuard, pull payments |
 | Company withdraws funds mid-review | Escrow locks funds per active report |
+| Anyone calls payout functions directly | Escrow accepts calls only from the Registry; the Registry restricts accept/reject to the program owner and verdicts to the Court |
 | Juror collusion or lazy voting | Stake and slash, hidden votes, reward only for majority |
 | Sybil jurors | Minimum stake and cooldown |
 | Weak randomness for jury pick | Pseudo-random for demo, **documented limitation**, VRF as upgrade |
@@ -330,10 +348,10 @@ The product must *feel alive*, not like a form on a page.
 
 ---
 
-## 21. Open questions for the team
+## 21. Decisions on the open questions (resolved 2026-11-08)
 
-1. Sepolia or a cheaper L2 testnet (Base or Polygon test networks)?
-2. Foundry or Hardhat (pick by team comfort)?
-3. Jury size for demo: 3 or 5?
-4. Do we implement the zk stretch goal or only mention it?
-5. Project name and branding.
+1. **Testnet:** Ethereum Sepolia (after local Anvil).
+2. **Toolchain:** Foundry (native Windows install; no WSL).
+3. **Jury size for demo:** 3, stored as a configurable constant.
+4. **zk stretch goal:** out of scope; mentioned as future work only.
+5. **Project name and branding:** VaultHunt (working title; repo `vaulthunt-escrow-blockchain-project`).
