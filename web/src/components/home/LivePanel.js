@@ -4,6 +4,7 @@ import { useAccount, useChainId, useReadContracts } from "wagmi";
 import { Chip } from "@/components/ui/Chip";
 import { GradientPanel } from "@/components/ui/GradientPanel";
 import { abis, addressesFor } from "@/lib/contracts";
+import { anvil } from "@/lib/wagmi";
 
 function short(address) {
   return address ? `${address.slice(0, 6)}…${address.slice(-4)}` : "-";
@@ -36,7 +37,7 @@ export function LivePanel() {
           { chainId, address: book.ReportRegistry, abi: abis.ReportRegistry, functionName: "court" },
         ]
       : [],
-    query: { enabled: Boolean(book), refetchInterval: 4000 },
+    query: { enabled: Boolean(book), refetchInterval: chainId === anvil.id ? 4000 : 12000 },
   });
 
   if (!book) {

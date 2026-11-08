@@ -17,8 +17,12 @@ export const anvil = defineChain({
  * free of optional wallet SDKs. Because Anvil is listed in `chains`, a click on "Switch
  * network" makes MetaMask offer to ADD Anvil automatically.
  */
+/** Which network the app uses by default: "anvil" (local) or "sepolia" (public test network). */
+export const defaultChain = (process.env.NEXT_PUBLIC_DEFAULT_CHAIN || "anvil").toLowerCase() === "sepolia" ? sepolia : anvil;
+
 export const wagmiConfig = createConfig({
-  chains: [anvil, sepolia],
+  // the FIRST chain is the one the app reads from when no wallet is connected
+  chains: defaultChain.id === sepolia.id ? [sepolia, anvil] : [anvil, sepolia],
   connectors: [injected()],
   transports: {
     [anvil.id]: http("http://127.0.0.1:8545"),

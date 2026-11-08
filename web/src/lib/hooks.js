@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useChainId, usePublicClient } from "wagmi";
 import { addressesFor } from "@/lib/contracts";
 import { getJson } from "@/lib/ipfs";
+import { anvil } from "@/lib/wagmi";
 import * as q from "@/lib/queries";
 
 /** The chain the app reads from, its public client and the synced contract addresses. */
@@ -14,12 +15,13 @@ export function useBook() {
 }
 
 /** Run a read function against the current chain, refreshed every few seconds. */
-export function useChainQuery(key, fn, { enabled = true, refetchInterval = 4000 } = {}) {
+export function useChainQuery(key, fn, { enabled = true, interval = [4000, 12000] } = {}) {
   const { chainId, publicClient, book } = useBook();
   return useQuery({
     queryKey: ["vh", chainId, ...key],
     enabled: Boolean(book && publicClient) && enabled,
-    refetchInterval,
+    // [local chain, real network] in milliseconds; false = do not poll
+    refetchInterval: interval === false ? false : chainId === anvil.id ? interval[0] : interval[1],
     queryFn: () => fn({ publicClient, book, chainId }),
   });
 }
@@ -27,7 +29,7 @@ export function useChainQuery(key, fn, { enabled = true, refetchInterval = 4000 
 export const usePrograms = () => useChainQuery(["programs"], q.fetchPrograms);
 export const useProgram = (id) => useChainQuery(["program", String(id)], (ctx) => q.fetchProgram(ctx, id), { enabled: id !== undefined && id !== "" });
 export const useReports = () => useChainQuery(["reports"], q.fetchReports);
-export const useRegistryConfig = () => useChainQuery(["registryConfig"], q.fetchRegistryConfig, { refetchInterval: 60000 });
+export const useRegistryConfig = () => useChainQuery(["registryConfig"], q.fetchRegistryConfig, { interval: [60000, 60000] });
 export const useCourtConfig = () => useChainQuery(["courtConfig"], q.fetchCourtConfig);
 export const useCases = () => useChainQuery(["cases"], q.fetchCases);
 export const useLeaderboard = () => useChainQuery(["leaderboard"], q.fetchLeaderboard);
@@ -51,7 +53,7 @@ export const useChainTime = () =>
         return Number((await publicClient.getBlock()).timestamp);
       }
     },
-    { refetchInterval: 2000 },
+    { interval: [2000, 8000] },
   );
 
 /** A program profile (name, scope, public encryption key) stored off-chain. */

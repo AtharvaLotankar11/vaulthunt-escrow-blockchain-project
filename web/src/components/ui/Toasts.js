@@ -53,6 +53,11 @@ export function ToastProvider({ children }) {
                 {t.tone === "success" ? "Confirmed" : t.tone === "error" ? "Failed" : "Pending"}: {t.title}
               </p>
               {t.text && <p className="mt-1 break-words text-sm text-muted">{t.text}</p>}
+              {t.href && (
+                <a href={t.href} target="_blank" rel="noreferrer" className="mt-1 inline-block text-sm underline">
+                  View on the block explorer
+                </a>
+              )}
             </div>
             <button type="button" aria-label="Dismiss" className="self-start text-muted hover:text-white" onClick={() => remove(t.id)}>
               <X size={16} />

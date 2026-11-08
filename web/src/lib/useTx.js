@@ -5,6 +5,7 @@ import { useCallback } from "react";
 import { useAccount, useChainId, usePublicClient, useWriteContract } from "wagmi";
 import { useToasts } from "@/components/ui/Toasts";
 import { friendlyError } from "@/lib/errors";
+import { wagmiConfig } from "@/lib/wagmi";
 
 /**
  * Sends one contract transaction with plain-language toasts (pending, confirmed, failed) and
@@ -24,7 +25,10 @@ export function useTx() {
   return useCallback(
     async ({ label, address, abi, functionName, args = [], value }) => {
       if (!isConnected) throw new Error("Connect your wallet first.");
-      if (walletChainId !== chainId) throw new Error("Switch your wallet to the Anvil Local network.");
+      if (walletChainId !== chainId) {
+        const name = wagmiConfig.chains.find((c) => c.id === chainId)?.name ?? "the right network";
+        throw new Error(`Switch your wallet to ${name}.`);
+      }
 
       const id = toasts.push({ tone: "pending", title: label, text: "Confirm in your wallet…" });
       try {
@@ -34,7 +38,8 @@ export function useTx() {
         const estimate = await publicClient.estimateContractGas({ address, abi, functionName, args, value, account });
         const gas = (estimate * 13n) / 10n;
         const hash = await writeContractAsync({ address, abi, functionName, args, value, chainId, gas });
-        toasts.update(id, { text: "Waiting for confirmation…" });
+        const explorer = publicClient.chain?.blockExplorers?.default?.url;
+        toasts.update(id, { text: "Waiting for confirmation…", href: explorer ? `${explorer}/tx/${hash}` : undefined });
         const receipt = await publicClient.waitForTransactionReceipt({ hash });
         if (receipt.status !== "success") throw new Error("The transaction failed on-chain.");
         toasts.update(id, { tone: "success", text: "Done." });

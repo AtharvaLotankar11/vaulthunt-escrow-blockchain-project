@@ -2,7 +2,7 @@
 
 import { useAccount, useConnect, useDisconnect, useSwitchChain } from "wagmi";
 import { useIsClient } from "@/lib/useIsClient";
-import { anvil } from "@/lib/wagmi";
+import { defaultChain } from "@/lib/wagmi";
 
 function shorten(address) {
   return `${address.slice(0, 6)}…${address.slice(-4)}`;
@@ -39,7 +39,7 @@ export function ConnectWallet() {
             type="button"
             className="chip chip--sm cursor-pointer"
             disabled={isPending}
-            onClick={() => connect({ connector: connectors[0], chainId: anvil.id })}
+            onClick={() => connect({ connector: connectors[0], chainId: defaultChain.id })}
           >
             {isPending ? "Confirm in wallet…" : "Connect wallet"}
           </button>
@@ -60,9 +60,9 @@ export function ConnectWallet() {
         type="button"
         className="chip chip--sm chip--alert cursor-pointer"
         disabled={isSwitching}
-        onClick={() => switchChain({ chainId: anvil.id })}
+        onClick={() => switchChain({ chainId: defaultChain.id })}
       >
-        {isSwitching ? "Switching…" : `Wrong network (${walletChainId}): switch to Anvil`}
+        {isSwitching ? "Switching…" : `Wrong network (${walletChainId}): switch to ${defaultChain.name}`}
       </button>
     );
   }

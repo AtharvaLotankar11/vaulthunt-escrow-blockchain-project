@@ -168,20 +168,16 @@ const registryEvent = (publicClient, book, eventName) =>
     strict: true,
   });
 
-/** Unique hunters that ever committed a report (for the leaderboard). */
-export async function fetchHunterAddresses({ publicClient, book }) {
-  const logs = await registryEvent(publicClient, book, "ReportCommitted");
-  return [...new Set(logs.map((log) => log.args.hunter))];
-}
-
+/** Hunters ranked by XP. Built from the reports themselves, so it needs no event history. */
 export async function fetchLeaderboard(ctx) {
-  const hunters = await fetchHunterAddresses(ctx);
+  const reports = await fetchReports(ctx);
+  const hunters = [...new Set(reports.map((r) => r.hunter))];
   const rows = await Promise.all(hunters.map((address) => fetchHunterProfile(ctx, address)));
   return rows.sort((a, b) => b.xp - a.xp);
 }
 
 /** Recent platform activity as short sentences, newest first (the live feed). */
-export async function fetchActivity({ publicClient, book }) {
+async function activityFromLogs({ publicClient, book }) {
   const from = BigInt(book.DeploymentBlock ?? 0);
   const [programs, committed, revealed, paid, rejected, escalated, verdicts] = await Promise.all([
     publicClient.getContractEvents({ address: book.BountyFactory, abi: abis.BountyFactory, eventName: "ProgramCreated", fromBlock: from, strict: true }),
@@ -206,4 +202,34 @@ export async function fetchActivity({ publicClient, book }) {
     .sort((a, b) => Number(b.l.blockNumber - a.l.blockNumber) || b.l.logIndex - a.l.logIndex)
     .slice(0, 12)
     .map(({ l, text }) => ({ key: `${l.blockNumber}-${l.logIndex}`, text }));
+}
+
+/** Fallback when the node refuses big event queries: rebuild a short feed from the reports and cases. */
+async function activityFromState(ctx) {
+  const short = (a) => `${a.slice(0, 6)}…${a.slice(-4)}`;
+  const [reports, cases, programs] = await Promise.all([fetchReports(ctx), fetchCases(ctx), fetchPrograms(ctx)]);
+  const items = [];
+  for (const p of programs) items.push({ at: 0, text: `Program #${p.id} opened by ${short(p.owner)}` });
+  for (const r of reports) {
+    items.push({ at: r.committedAt, text: `${short(r.hunter)} committed report #${r.id}` });
+    if (r.revealedAt) items.push({ at: r.revealedAt, text: `Report #${r.id} revealed and its reward locked` });
+    if (r.rejectedAt) items.push({ at: r.rejectedAt, text: `Report #${r.id} was rejected` });
+    if (r.status === 5) items.push({ at: r.rejectedAt || r.reviewDeadline, text: `Report #${r.id} went to the jury` });
+    if (r.status === 6) items.push({ at: r.revealedAt + 1, text: `${short(r.hunter)} was paid for report #${r.id}` });
+  }
+  for (const c of cases) {
+    if (c.status === 2) items.push({ at: c.revealDeadline, text: `Jury verdict on report #${c.reportId}: ${c.hunterWins ? "hunter wins" : "company wins"}` });
+  }
+  return items
+    .sort((a, b) => b.at - a.at)
+    .slice(0, 12)
+    .map((item, i) => ({ key: `s-${i}`, text: item.text }));
+}
+
+export async function fetchActivity(ctx) {
+  try {
+    return await activityFromLogs(ctx);
+  } catch {
+    return activityFromState(ctx);
+  }
 }

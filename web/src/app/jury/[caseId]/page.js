@@ -39,7 +39,7 @@ export default function CasePage() {
   const courtCase = (cases ?? []).find((c) => String(c.id) === String(caseId));
   const report = courtCase && (reports ?? []).find((r) => r.id === courtCase.reportId);
   const { data: votes } = useVotes(caseId, courtCase?.jurors);
-  const { data: disclosure } = useChainQuery(["disclosure", report?.cid ?? ""], () => getJson(report.cid), { enabled: Boolean(report?.cid), refetchInterval: false });
+  const { data: disclosure } = useChainQuery(["disclosure", report?.cid ?? ""], () => getJson(report.cid), { enabled: Boolean(report?.cid), interval: false });
 
   if (!book) return <section className="page-x py-12"><NoDeployment chainId={chainId} /></section>;
   if (isError) return <section className="page-x py-12"><ChainDown /></section>;

@@ -63,3 +63,9 @@ Done in code and covered by the automated test where possible:
 | Reduced motion | Implemented; confirm by eye (DevTools, Rendering, emulate prefers-reduced-motion) |
 | Responsive on 4 widths | Implemented by code; NOT yet verified in a browser by the author's tooling |
 | Fonts and imagery licences | Fonts pending; glass arc is original SVG; no third-party imagery |
+
+## Phase 10: running on Sepolia
+- Set `NEXT_PUBLIC_DEFAULT_CHAIN=sepolia` and `NEXT_PUBLIC_SEPOLIA_RPC=<your RPC link>` in `web/.env.local` to use the public test network; leave both out for the local chain.
+- Free RPC plans may refuse large event queries. The leaderboard no longer uses events, and the live feed falls back to rebuilding itself from the contracts' own state.
+- On Sepolia the demo time-travel buttons and Demo Mode do not exist (they need Anvil), so deadlines are real: review, reveal and dispute windows are 10 minutes, jury commit and reveal windows 5 minutes.
+- Transactions show a block explorer link in their message, and the footer lists the verified contracts.

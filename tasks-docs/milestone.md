@@ -170,6 +170,7 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | 2026-11-08 | Phase 6-7 | pnpm lint and build OK; program created, encrypted report submitted, accepted and paid on Anvil (user-run) | PASS | App loads, wallet connects, live chain data, Report #1 Paid, Badge #0, 50 XP verified |
 | 2026-11-08 | Phase 8 | dispute, hidden jury votes, reveal, verdict and payout completed on Anvil through the UI (user-run); automated UI test 39/39 | PASS | Jury room, profile, leaderboard, live feed, demo time-travel complete |
 | 2026-11-08 | Phase 9 | pnpm lint and build OK; automated UI test 42/42 including Demo Mode; layout checked at 1440, 1024, 768 and 390 and keyboard focus checked (user-run) | PASS | not checked in a browser: reduced motion; fonts use fallbacks (A-3), see DESIGN_NOTES.md |
+| 2026-11-08 | Audit Gate 10 | forge test 299/299; coverage 99.82% lines, 97.03% branches; Slither 0 High (2 Medium reviewed); pnpm lint and build pass; no secrets tracked; 8 contracts verified on Sepolia | PASS | known gaps: fonts use fallbacks (A-3); jury path run on the local chain only, not repeated on Sepolia |
 
 ---
 
@@ -221,6 +222,7 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | 2026-11-08 | Phase 8 | Anvil clock read from the pending block; queries never pause when the browser is offline; pages show Loading instead of crashing | found while running the dispute demo | 9,10 |
 | 2026-11-08 | Phase 9 | Framer Motion animations, reduced-motion support, page transitions; /demo Demo Mode plays the full scenario with Anvil accounts and no wallet | polish and presentations | 10,11 |
 | 2026-11-08 | Phase 9 | Alerts are white text with a magenta bar; tablet layouts stack until 1280px; program names shown instead of ids | design checklist: magenta only on bars, dashes and focus | 10 |
+| 2026-11-08 | Phase 10 | README.md and PROJECT_REPORT.md written from the audit results | deliverables | 11 |
 
 ---
 
@@ -708,9 +710,9 @@ powershell -NoProfile -Command "Get-Content web\DESIGN_NOTES.md"
 
 ---
 
-## [ ] Phase 10: Sepolia deployment and final audit
+## [x] Phase 10: Sepolia deployment and final audit
 
-**Status:** NOT_STARTED
+**Status:** DONE
 
 **Goal:** Deploy all contracts to Sepolia testnet, verify on Etherscan, update frontend to use Sepolia, run final full audit (all tests, Slither, coverage, design checklist, doc conformance).
 
@@ -732,13 +734,13 @@ powershell -NoProfile -Command "Get-Content web\DESIGN_NOTES.md"
 
 **Tasks:**
 
-- [ ] Set environment variables in `.env`: `SEPOLIA_RPC`, `PRIVATE_KEY` (test wallet with Sepolia ETH), `ETHERSCAN_API_KEY`
-- [ ] Deploy contracts to Sepolia: `forge script script\Deploy.s.sol --rpc-url %SEPOLIA_RPC% --broadcast --verify --etherscan-api-key %ETHERSCAN_API_KEY%`, confirm all 7 contracts deployed and verified, save addresses
-- [ ] Update `web/contracts/addresses.json` with Sepolia addresses (or run `sync-abis.js` with Sepolia broadcast output)
-- [ ] Update `web/lib/wagmi-config.js` to include Sepolia chain, test wallet connect on Sepolia
-- [ ] Test full flow on Sepolia: create program, deposit, commit, reveal, accept, dispute (if time), verify all transactions on Sepolia Etherscan
-- [ ] Run final audit: `forge test -vv`, `forge coverage`, `slither src/`, `pnpm lint`, design.md checklist, doc conformance (contract names match PRD section 7, no `.ts`/`.tsx` in `web/`, colors from design.md, secrets in `.env` not tracked)
-- [ ] Record audit results in `milestone.md` Audit Log (Audit Gate 10)
+- [x] Set environment variables in `.env`: `SEPOLIA_RPC`, `PRIVATE_KEY` (test wallet with Sepolia ETH), `ETHERSCAN_API_KEY`
+- [x] Deploy contracts to Sepolia: `forge script script\Deploy.s.sol --rpc-url %SEPOLIA_RPC% --broadcast --verify --etherscan-api-key %ETHERSCAN_API_KEY%`, confirm all 7 contracts deployed and verified, save addresses
+- [x] Update `web/contracts/addresses.json` with Sepolia addresses (or run `sync-abis.js` with Sepolia broadcast output)
+- [x] Update `web/lib/wagmi-config.js` to include Sepolia chain, test wallet connect on Sepolia
+- [x] Test full flow on Sepolia: create program, deposit, commit, reveal, accept, dispute (if time), verify all transactions on Sepolia Etherscan
+- [x] Run final audit: `forge test -vv`, `forge coverage`, `slither src/`, `pnpm lint`, design.md checklist, doc conformance (contract names match PRD section 7, no `.ts`/`.tsx` in `web/`, colors from design.md, secrets in `.env` not tracked)
+- [x] Record audit results in `milestone.md` Audit Log (Audit Gate 10)
 
 **Exit Criteria:**
 - All 7 contracts deployed and verified on Sepolia
