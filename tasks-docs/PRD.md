@@ -1,0 +1,339 @@
+# PRD: Decentralized Escrow System for Bug Bounty Hunters
+
+**Working title:** VaultHunt (rename freely)
+**Course:** Blockchain Technology (Sem VII), group project
+**Version:** 0.1 (draft for team discussion)
+**Target network:** Ethereum Sepolia testnet (local Anvil/Hardhat for development). No real money.
+
+---
+
+## 1. One-line summary
+
+A platform where companies lock bounty rewards in smart contracts, hackers submit **encrypted, timestamped** vulnerability reports, and payment is released **automatically** on acceptance. Disputes are settled by a **staked jury** instead of a company's goodwill. All of it is wrapped in a fast, game-like, real-time web app.
+
+---
+
+## 2. Problem
+
+| Who | Pain today |
+|---|---|
+| **Hunters** | Reports get rejected as "duplicate" or "out of scope" with no proof. Payouts are late or never come. The company can quietly fix the bug and ghost the hunter. |
+| **Companies** | Need to attract serious hunters but can't prove they will pay. Fake or low-quality reports waste time. |
+| **Both** | A central platform sits in the middle, takes fees, and is the single point of trust and failure. |
+
+**Core issue:** the money and the verdict are controlled by one party.
+
+---
+
+## 3. Solution (plain words)
+
+1. **Money is locked first.** A company can't post a bounty without depositing the reward. Hunters can see it on-chain.
+2. **Proof of discovery.** A hunter publishes a *hash* of the report before the company sees it. This proves who found it first, with no one able to steal or back-date it.
+3. **Report stays private.** The report is encrypted so only the company (and, if disputed, the jury) can read it.
+4. **Payout by code.** Accepted means the contract pays. No middleman.
+5. **Fair disputes.** If the company rejects or stalls, the hunter can escalate to a jury of staked arbitrators who vote and get rewarded or penalised.
+6. **Reputation that can't be faked or sold.** Hunters earn non-transferable on-chain badges and levels.
+
+---
+
+## 4. Goals and non-goals
+
+### Goals
+- Working end-to-end flow on a testnet: create bounty, submit, review, pay, dispute.
+- **7 smart contracts** that genuinely interact (faculty minimum is 5).
+- An interactive, real-time, visually strong dApp, not a static form page.
+- Security-aware design (reentrancy, front-running, access control) with tests to prove it.
+- Strong alignment to the syllabus (see section 14).
+
+### Non-goals (explicitly out of scope)
+- Mainnet deployment or real funds (would need a professional audit).
+- KYC, legal contracts, or tax handling.
+- Judging whether a vulnerability is technically real *automatically*. Humans (company, jury) decide; the chain enforces the outcome.
+- Fiat payments.
+
+---
+
+## 5. Users and personas
+
+| Persona | Needs | Key actions |
+|---|---|---|
+| **Company (Program Owner)** | Trust signal, simple setup, control over scope and severity payouts | Create program, deposit funds, review reports, accept or reject, top up |
+| **Hunter** | Proof of priority, guaranteed payout, reputation | Browse programs, commit and submit report, track status, escalate dispute |
+| **Juror (Arbitrator)** | Earn rewards for fair judgement | Stake tokens, receive case, vote, collect rewards |
+| **Visitor** | Understand the platform quickly | Browse live feed, leaderboard, stats without connecting a wallet |
+
+---
+
+## 6. User flows
+
+### 6.1 Happy path
+```
+Company: createProgram + deposit ETH  ->  funds locked in its own Escrow
+Hunter : commitReport(hash)           ->  timestamp & priority locked
+Hunter : revealReport(encrypted CID)  ->  company can now read it
+Company: acceptReport(severity)       ->  Escrow pays hunter automatically
+System : mints/upgrades hunter's Reputation badge
+```
+
+### 6.2 Dispute path
+```
+Company rejects (or ignores for N days)
+Hunter : escalate(stake dispute fee)
+System : picks N jurors from the staked pool
+Jurors : commit vote -> reveal vote
+System : majority wins; funds go to hunter or back to company
+         jurors who voted with majority are rewarded, others slashed
+```
+
+### 6.3 Report state machine
+```
+Committed -> Revealed -> UnderReview -> Accepted -> Paid
+                              |-> Rejected -> (Closed | Disputed)
+                              |-> Timeout  -> Disputed
+Disputed -> Voting -> Resolved -> Paid | Refunded
+```
+
+---
+
+## 7. Smart contract architecture (7 contracts)
+
+| # | Contract | Standard / pattern | Responsibility |
+|---|---|---|---|
+| 1 | **BountyToken (BBT)** | ERC-20 | Platform token used for juror staking, dispute fees, governance weight. Faucet function for testnet demo. |
+| 2 | **BountyFactory** | Factory + EIP-1167 minimal proxy clones | Creates a new Escrow per program cheaply, keeps a registry of all programs. |
+| 3 | **BountyEscrow** | Clone instance, ReentrancyGuard, pull-payment | Holds one program's funds. Stores severity tiers (Low/Med/High/Critical payout %). Releases, refunds, or freezes funds. |
+| 4 | **ReportRegistry** | Commit-reveal | Stores report hash, timestamp, encrypted-file pointer (IPFS CID), status. Resolves duplicates by earliest commit. |
+| 5 | **DisputeCourt** | Staked jury, commit-reveal voting, slashing | Handles escalations: juror selection, voting, result, rewards and penalties. |
+| 6 | **ReputationSBT** | ERC-721 *soulbound* (non-transferable) | Hunter level badges (Rookie, Hacker, Elite, Legend). Metadata updates with accepted reports and severity. |
+| 7 | **PlatformTreasury** | Access-controlled vault | Collects small platform fee and slashed stakes; funds juror rewards; owned by multisig or timelock for demo. |
+
+### Contract interaction map
+```
+                 +----------------+
+                 |  BountyToken   |<-------- stake / fees --------+
+                 +----------------+                               |
+                        ^                                         |
+                        | stake                                   |
+ Company --> BountyFactory --clones--> BountyEscrow <--pay/refund-+--- DisputeCourt
+                 |                         ^   |                       ^   |
+                 | registers               |   | on accept             |   | verdict
+                 v                         |   v                       |   v
+            ReportRegistry <---status------+  ReputationSBT        PlatformTreasury
+                 ^
+                 |
+               Hunter
+```
+
+### Key rules per contract (short)
+- **Escrow:** funds can leave only through `payHunter`, `refundCompany`, or a Court-ordered resolution. Uses pull-payments and a reentrancy guard. Owner cannot withdraw locked funds mid-report.
+- **ReportRegistry:** `commit(hash)` first, `reveal(cid, salt)` later. Contract checks `hash == keccak256(cid, salt, hunter)`. Binding the hunter address prevents copy-paste theft.
+- **DisputeCourt:** jurors must hold minimum staked BBT; votes are hidden until reveal phase to avoid herd voting.
+- **ReputationSBT:** overrides transfer logic so tokens cannot be moved (soulbound). Level derives from on-chain accepted count and severity weight.
+
+---
+
+## 8. Features
+
+### 8.1 Must-have (MVP)
+1. Wallet connect (MetaMask) and network check.
+2. Create program with scope text, severity payout table, deposit, and review deadline.
+3. Browse programs with live "locked funds" counter.
+4. Two-step report submission (commit then reveal) with client-side encryption.
+5. Company review dashboard with Accept / Reject and severity selection.
+6. Automatic payout and refund.
+7. Dispute escalation and juror voting (at least 3 jurors).
+8. Soulbound reputation badge minted on first accepted report.
+9. Event-driven live feed.
+
+### 8.2 Should-have
+- Hunter profile page with badge, earnings, and accepted-report timeline.
+- Global leaderboard (top hunters, top paying programs).
+- Notification toasts on every on-chain event.
+- Auto-escalation when the company misses the review deadline.
+- Top-up and extend a program.
+
+### 8.3 Nice-to-have (stretch)
+- Chainlink VRF for fair juror selection (needs testnet subscription).
+- Anonymous hunters via zk proof of "I own a valid badge" (links to zk-SNARK topic in Module 6).
+- Gasless first submission via meta-transactions / account abstraction.
+- Cross-chain deployment to a second testnet.
+- On-chain governance vote to change fee or juror count.
+
+---
+
+## 9. Interactive and "happening" experience (frontend vision)
+
+The product must *feel alive*, not like a form on a page.
+
+| Idea | What the user sees |
+|---|---|
+| **Live Activity Ticker** | A scrolling feed ("Hunter 0x4f...a2 just earned 0.8 ETH, Critical") driven by contract events in real time. |
+| **Animated Vault** | Each program shown as a vault card. Funds fill visually, and a lock opens with animation on payout. |
+| **Report Journey Tracker** | A pipeline stepper (Committed, Revealed, Review, Accepted, Paid) that advances live as transactions confirm. |
+| **Jury Room** | A dispute screen with juror avatars, countdown timer, and vote reveal animation. |
+| **Gamification** | XP bar, level-ups, rank badges, streaks, a "Hall of Fame". |
+| **Transaction UX** | Every transaction shows pending, confirmed, and failed states with human-readable messages (no raw hex errors). |
+| **Dark "terminal" theme** | Hacker-style visual identity with smooth micro-interactions. |
+| **Demo mode** | A one-click "simulate" panel that plays a full scenario with pre-funded test wallets for presentations. |
+
+---
+
+## 10. Technical stack (proposed)
+
+| Layer | Choice | Why |
+|---|---|---|
+| Contracts | **Solidity 0.8.x** + **OpenZeppelin** | Syllabus Module 3; audited building blocks |
+| Dev and test | **Foundry** (or Hardhat) + **Remix** for quick prototypes | Fast tests and fuzzing; Remix is in the syllabus |
+| Local chain | Anvil / Hardhat node | Instant blocks for development |
+| Testnet | Sepolia | Widely supported faucets and tools |
+| Frontend | **Next.js (React) + TypeScript** | Component-driven, interactive |
+| Wallet and chain access | **wagmi + viem + RainbowKit** | Modern, event watching built in |
+| UI and animation | Tailwind CSS + shadcn/ui + Framer Motion | Polished, fast to build |
+| Real-time data | Contract event subscriptions via viem (optionally The Graph subgraph) | Powers live feed and leaderboard |
+| File storage | **IPFS** via Pinata or web3.storage | Large encrypted reports off-chain |
+| Encryption | Browser Web Crypto (hybrid: AES for file, company public key for the AES key) | Only the company and jurors can decrypt |
+| Security tooling | Slither, Foundry fuzz and invariant tests | Module 6 security |
+
+> Note: verify current versions and testnet availability at build time (faucets and RPC providers change often).
+
+---
+
+## 11. System architecture
+
+```
+ [ Next.js dApp ]
+     |  wagmi/viem                \
+     |                             \--> [ IPFS ] encrypted reports
+     v
+ [ Wallet: MetaMask ] --signs tx--> [ Sepolia ]
+                                      |  Factory, Escrow, Registry,
+                                      |  Court, SBT, Token, Treasury
+                                      v
+                          events --> [ Frontend live feed / leaderboard ]
+```
+
+**On-chain:** money, hashes, status, votes, reputation.
+**Off-chain:** encrypted report files, UI, indexing.
+**Rule of thumb:** nothing sensitive in plaintext on-chain.
+
+---
+
+## 12. Security and threat model
+
+| Threat | Mitigation |
+|---|---|
+| Company steals the bug and rejects | Commit hash timestamp proves priority; dispute path with jury |
+| Hunter copies another hunter's report | Hash is bound to hunter address and salt; earliest commit wins |
+| Front-running a reveal | Commit-reveal scheme |
+| Reentrancy on payout | Checks-effects-interactions, ReentrancyGuard, pull payments |
+| Company withdraws funds mid-review | Escrow locks funds per active report |
+| Juror collusion or lazy voting | Stake and slash, hidden votes, reward only for majority |
+| Sybil jurors | Minimum stake and cooldown |
+| Weak randomness for jury pick | Pseudo-random for demo, **documented limitation**, VRF as upgrade |
+| Admin abuse | Role-based access, treasury behind timelock or multisig |
+| Report leaks | Client-side encryption; only hash and CID on-chain |
+
+**Honest limitation:** a smart contract cannot verify that a bug is real. It enforces *process and payment*; judgement is human (company or jury).
+
+---
+
+## 13. Testing and quality
+
+- **Unit tests** for every function of every contract.
+- **Fuzz and invariant tests**, for example: "escrow balance never goes below locked rewards".
+- **Scenario tests:** happy path, rejection, timeout, dispute with 3 and 5 jurors, duplicate reports.
+- **Static analysis:** Slither report included in submission.
+- **Gas report** for key functions.
+- **Frontend:** manual test checklist plus a recorded demo run.
+- Target: 90%+ line coverage on contracts.
+
+---
+
+## 14. Syllabus mapping (Blockchain Technology)
+
+| Syllabus module | Where it appears in the project |
+|---|---|
+| **1. DLT and Blockchain** (hashing, Merkle tree, consensus) | Report hash commitments; explanation of why Ethereum finality is trusted |
+| **3. Ethereum and Smart Contracts** (EVM, MetaMask, Solidity, Remix, test networks, DApps, gas, vulnerabilities) | All 7 contracts, wallet flow, Sepolia deployment, gas optimisation, vulnerability handling |
+| **5. Crypto Assets, NFTs** (ERC20, ERC721, tokenization) | BountyToken (ERC-20), ReputationSBT (ERC-721 variant) |
+| **6. DeFi, DAO, Security** (staking, governance tokens, DAO, wallet attacks, EVM security, zk-SNARKs) | Juror staking and slashing, DAO-style jury, security testing, optional zk badge proof |
+| **4. Hyperledger** | Not used. Add a short comparison slide: why a public chain suits open bounty trust |
+
+---
+
+## 15. Success metrics
+
+| Metric | Target |
+|---|---|
+| Smart contracts deployed and verified | 7 |
+| End-to-end flows demonstrated | Happy path, rejection, timeout, dispute |
+| Test coverage | 90%+ |
+| Critical or high Slither findings unresolved | 0 |
+| Tx to confirmation feedback in UI | Under 1 second to show "pending" |
+| Live demo without manual console use | Yes |
+
+---
+
+## 16. Milestones (suggested 8-week plan)
+
+| Week | Deliverable |
+|---|---|
+| 1 | Finalise PRD, repo setup, roles, wireframes |
+| 2 | BountyToken, ReputationSBT, Treasury plus tests |
+| 3 | Factory, Escrow plus tests |
+| 4 | ReportRegistry (commit-reveal) plus IPFS and encryption prototype |
+| 5 | DisputeCourt plus integration tests |
+| 6 | Frontend core: wallet, program pages, report flow |
+| 7 | Live feed, vault animations, jury room, leaderboard |
+| 8 | Security pass, Sepolia deploy, demo mode, report and slides |
+
+---
+
+## 17. Suggested team split (4 members)
+
+1. **Contracts A:** Token, SBT, Treasury, Factory.
+2. **Contracts B:** Escrow, Registry, Court, security tests.
+3. **Frontend:** UI, animations, wallet integration, live feed.
+4. **Integration and docs:** IPFS and encryption, deployment scripts, demo mode, report.
+
+---
+
+## 18. Deliverables
+
+- GitHub repo with contracts, tests, frontend, and deployment scripts.
+- Verified contracts on Sepolia with addresses listed in README.
+- Live demo plus a 5-minute recorded walkthrough.
+- Project report (architecture, security analysis, test results, limitations).
+- Presentation deck.
+
+---
+
+## 19. Risks
+
+| Risk | Impact | Plan |
+|---|---|---|
+| Scope too big | Delay | Lock MVP list in 8.1; stretch goals only after week 6 |
+| Testnet faucet or RPC problems | Demo failure | Keep a local Anvil fallback and a recorded demo |
+| Encryption complexity | Bugs | Build simplest hybrid scheme first; test with fixtures |
+| Jury randomness criticism | Viva questions | Document honestly; show VRF upgrade path |
+| Frontend polish eats time | Contracts suffer | Contracts frozen by week 5 |
+
+---
+
+## 20. Viva-ready one-liners
+
+- **Why blockchain?** The money and the verdict shouldn't belong to one party.
+- **Why 7 contracts?** Separation of concerns: money, evidence, judgement, and reputation each have their own contract.
+- **Why commit-reveal?** Proves "I found it first" without exposing the bug.
+- **Why soulbound reputation?** Reputation you can buy isn't reputation.
+- **What can't it do?** It cannot decide if a bug is real; it only enforces a fair process.
+
+---
+
+## 21. Open questions for the team
+
+1. Sepolia or a cheaper L2 testnet (Base or Polygon test networks)?
+2. Foundry or Hardhat (pick by team comfort)?
+3. Jury size for demo: 3 or 5?
+4. Do we implement the zk stretch goal or only mention it?
+5. Project name and branding.
