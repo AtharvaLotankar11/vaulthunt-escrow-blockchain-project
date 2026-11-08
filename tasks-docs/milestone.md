@@ -129,7 +129,8 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 
 ### 8. Environment and command rules (Windows cmd.exe shell, user has PowerShell 5.1)
 - **Shell fact:** Kiro's `execute_pwsh` tool runs **cmd.exe** (verified: `echo %ComSpec%` → `C:\WINDOWS\system32\cmd.exe`). The user runs **PowerShell 5.1** in their own terminal (verified: Major 5, Minor 1, Build 26100).
-- **Verification command rule for ALL phases:** Write one command per line. No `;` chaining, no `&&`. Plain tools (forge, anvil, cast, pnpm, git, node) run as-is. Use `forge $1 --root contracts <cmd>` (UNVERIFIED: forge not installed; verify `forge --help | find "--root"` at Phase 0) and `pnpm --dir web <cmd>` (verified: pnpm supports `--dir` and `-C`) instead of `cd`. Any PowerShell cmdlet (Get-ChildItem, Select-String, Get-Content, Start-Process, Where-Object) must be wrapped: `powershell -NoProfile -Command "..."`.
+- **Absolute paths for --root and --dir:** Always use absolute paths like `--root D:\vaulthunt-escrow-blockchain-project\contracts` or `--dir D:\vaulthunt-escrow-blockchain-project\web`. Relative paths can create nested folders (verified: relative `--root contracts` created `contracts\contracts\contracts`). When running Verification commands, replace `--root contracts` with `--root D:\vaulthunt-escrow-blockchain-project\contracts`.
+- **Verification command rule for ALL phases:** Write one command per line. No `;` chaining, no `&&`. Plain tools (forge, anvil, cast, pnpm, git, node) run as-is. Use `forge --root D:\vaulthunt-escrow-blockchain-project\contracts <cmd>` and `pnpm --dir D:\vaulthunt-escrow-blockchain-project\web <cmd>` (verified: pnpm supports `--dir` and `-C`) instead of `cd`. Any PowerShell cmdlet (Get-ChildItem, Select-String, Get-Content, Start-Process, Where-Object) must be wrapped: `powershell -NoProfile -Command "..."`.
 - Never use bash/cmd hybrid syntax: no `&&`, `grep`, `dir /b`, `type`, `findstr`, `%VAR%`, `anvil &`, `export`, `source`. Use PowerShell equivalents wrapped as above.
 - **Installing tools:** give instructions ONLY from official documentation you fetched in this session, and name the page. Never construct, guess or "remember" download URLs, release asset names, package-manager package names or installer names. If the official method does not work on Windows, say so plainly and ask the user.
 - Never offer to skip, reorder or defer a phase or a prerequisite. If a prerequisite is blocked, help unblock it or ask.
@@ -152,7 +153,7 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | A-6 | Foundry nightly manual install: forge/anvil/cast v1.9.1-nightly commit 7bff443b45b93efecfeae1779404d12a20f4c225 from GitHub nightly zip into C:\Users\Manoj\.foundry\bin | OPEN | Review at Phase 5 if tests behave oddly; first suggestion is to switch to latest stable release |
 | A-7 | Environment versions: Node v24.22.0, Git 2.45.2.windows.1, pnpm 12.18.0, PowerShell 5.1 | RESOLVED | Verified in session 2026-11-08 |
 | A-8 | Design decisions D1-D4 (commit-reveal flow, access control, timeouts, soulbound implementation) | RESOLVED | User-approved R1 |
-| A-9 | Slither static analysis: UNVERIFIED on Windows. If `slither --version` fails at Phase 1, skip local Slither, rely on Foundry fuzz and invariant tests, optionally run Slither in a Linux GitHub Actions workflow | OPEN | To be tested at Phase 1 start |
+| A-9 | Slither static analysis: confirmed working on Windows with slither --version 0.11.6 | RESOLVED | Tested at Phase 0, will verify on real contracts in Phase 1 |
 
 ---
 
@@ -160,7 +161,7 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 
 | Date | Gate | Commands Run | Result | Notes |
 |---|---|---|---|---|
-| | | | | |
+| 2026-11-08 | Gate 0 | forge build, verify folders, check .gitignore, verify no .env | PASS | All tools verified, folders created, OpenZeppelin v5.7.0 installed, no secrets in tracked files |
 
 ---
 
@@ -209,9 +210,9 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 
 ---
 
-## [ ] Phase 0: Environment and repo scaffold
+## [x] Phase 0: Environment and repo scaffold
 
-**Status:** NOT_STARTED
+**Status:** DONE
 
 **Goal:** Verify all tools are installed and working. Set up the repository folder structure, ignore files, environment template, and documentation skeleton. No contract or app code yet.
 
@@ -232,15 +233,15 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 
 **Tasks:**
 
-- [ ] Verify tool versions (forge, anvil, cast, node, pnpm, git) and record them in README with forge/anvil/cast commit SHA; note nightly vs stable
-- [ ] Create `contracts/` folder and initialize Foundry project with `forge init`
-- [ ] Install OpenZeppelin contracts: `forge install OpenZeppelin/openzeppelin-contracts`
-- [ ] Create `web/` folder (empty for now, will initialize in Phase 6)
-- [ ] Create `.gitignore` at repo root (ignore `node_modules/`, `.env`, `out/`, `cache/`, `broadcast/`, `.next/`)
-- [ ] Create `.env.example` at repo root with empty placeholders: `SEPOLIA_RPC=`, `PRIVATE_KEY=`, `ETHERSCAN_API_KEY=`, `PINATA_JWT=`, `NEXT_PUBLIC_WALLETCONNECT_ID=`
-- [ ] Create `README.md` skeleton: project title, one-line description, folder structure, setup steps (to be filled), tool versions
-- [ ] Reference `tasks-docs/` folder in README (note: already exists, contains PRD.md, TechStack.md, design.md, milestone.md)
-- [ ] Confirm `foundry.toml` has reasonable defaults (solc version 0.8.x, optimizer enabled)
+- [x] Verify tool versions (forge, anvil, cast, node, pnpm, git) and record them in README with forge/anvil/cast commit SHA; note nightly vs stable
+- [x] Create `contracts/` folder and initialize Foundry project with `forge init`
+- [x] Install OpenZeppelin contracts: `forge install OpenZeppelin/openzeppelin-contracts`
+- [x] Create `web/` folder (empty for now, will initialize in Phase 6)
+- [x] Create `.gitignore` at repo root (ignore `node_modules/`, `.env`, `out/`, `cache/`, `broadcast/`, `.next/`)
+- [x] Create `.env.example` at repo root with empty placeholders: `SEPOLIA_RPC=`, `PRIVATE_KEY=`, `ETHERSCAN_API_KEY=`, `PINATA_JWT=`, `NEXT_PUBLIC_WALLETCONNECT_ID=`
+- [x] Create `README.md` skeleton: project title, one-line description, folder structure, setup steps (to be filled), tool versions
+- [x] Reference `tasks-docs/` folder in README (note: already exists, contains PRD.md, TechStack.md, design.md, milestone.md)
+- [x] Confirm `foundry.toml` has reasonable defaults (solc version 0.8.x, optimizer enabled)
 
 **Exit Criteria:**
 - Folders `contracts/`, `web/`, `tasks-docs/` exist
