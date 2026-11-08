@@ -14,18 +14,18 @@ The path is `tasks-docs\milestone.md`. Rules live in the Protocol section of thi
 | Phase | Name | Tasks | Prerequisites |
 |---|---|---|---|
 | 0 | Environment and repo scaffold | 9 | 4 |
-| 1 | Token, Reputation SBT, Treasury contracts | 8 | 2 |
-| 2 | Escrow and Factory contracts | 8 | 2 |
-| 3 | Report Registry (commit-reveal) | 6 | 2 |
-| 4 | Dispute Court and juror system | 7 | 2 |
-| 5 | Deploy scripts, scenario/fuzz/invariant tests | 8 | 2 |
+| 1 | Token, Reputation SBT, Treasury contracts | 9 | 1 |
+| 2 | Escrow and Factory contracts | 8 | 1 |
+| 3 | Report Registry (commit-reveal) | 6 | 1 |
+| 4 | Dispute Court and juror system | 7 | 1 |
+| 5 | Deploy scripts, scenario/fuzz/invariant tests | 8 | 1 |
 | 6 | Next.js scaffold, wagmi, RainbowKit, design tokens | 9 | 4 |
-| 7 | Core flows (programs, submit, review, IPFS) | 10 | 2 |
-| 8 | Dispute/jury UI, profile, leaderboard, live feed | 5 | 2 |
+| 7 | Core flows (programs, submit, review, IPFS) | 9 | 3 |
+| 8 | Dispute/jury UI, profile, leaderboard, live feed | 9 | 2 |
 | 9 | Polish (motion, responsive, accessibility, demo) | 9 | 1 |
 | 10 | Sepolia deployment and final audit | 7 | 4 |
-| 11 | Documentation, report, presentation, demo video | 5 | 1 |
-| **Total** | **12 phases** | **91 tasks** | **28 prerequisites** |
+| 11 | Documentation, report, presentation, demo video | 6 | 1 |
+| **Total** | **12 phases** | **96 tasks** | **24 prerequisites** |
 
 All phases have ≤10 tasks. Updated 2026-11-08 Batch 2.
 
@@ -166,6 +166,7 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | 2026-11-08 | Gate 2 | forge test 99/99, coverage 99.5% lines, slither 0 High (user-run) | PASS | BountyFactory and BountyEscrow complete, pull-payment pattern, reentrancy-safe |
 | 2026-11-08 | Gate 3 | forge test 176/176, coverage 99.75% lines, slither 0 High (user-run) | PASS | ReportRegistry with commit-reveal, severity locking, badge minting, state machine complete |
 | 2026-11-08 | Gate 4 | forge test 254/254, coverage 99.84% lines, slither 0 High (user-run) | PASS | DisputeCourt with staking, voting, verdict application, tie-break rules complete |
+| 2026-11-08 | Gate 5 | forge test 289/289, coverage 99.82% lines, slither 0 High, Deploy and Seed run on Anvil (user-run) | PASS | evidence in SECURITY.md |
 
 ---
 
@@ -208,6 +209,8 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | 2026-11-08 | Phase 3 | Revealing a report locks its reward; badge and ETH-push failures never block a payout | protects hunters and tolerates hostile hunter contracts | 5,7,9 |
 | 2026-11-08 | Phase 4 | Hunter pays the dispute fee with payDisputeFee before registry.escalate (approve, payDisputeFee, escalate) | Slither High arbitrary-send-erc20 | 5,7,8 |
 | 2026-11-08 | Phase 4 | Court has no owner; tie after rejection goes to the company, after timeout to the hunter; verification contract is DisputeScenarios | design choice; matches the milestone command | 5,8 |
+| 2026-11-08 | 5 | BountyEscrow: payout uses the pool size recorded at lock time (never smaller) | scenario test found that withdrawing free funds could shrink a locked reward | 2, 3, 4, 7 |
+| 2026-11-08 | 5 | Deploy.s.sol signs with --private-key or --account; local windows are minutes; addresses go to contracts\deployments\<chainId>.json | safer and demo-friendly | 6, 9, 10 |
 
 ---
 
@@ -448,9 +451,9 @@ powershell -NoProfile -Command "Get-Content contracts\LIMITATIONS.md"
 
 ---
 
-## [ ] Phase 5: Contracts integration, scenario tests, security pass, local deploy script
+## [x] Phase 5: Contracts integration, scenario tests, security pass, local deploy script
 
-**Status:** NOT_STARTED
+**Status:** DONE
 
 **Goal:** Wire all 7 contracts together with correct permissions and references. Write end-to-end scenario tests for happy path, rejection, timeout, dispute. Run full security suite (Slither on all contracts, fuzz tests, invariant tests). Create a Foundry deploy script for Anvil. Aim for 90%+ coverage overall.
 
@@ -463,14 +466,14 @@ powershell -NoProfile -Command "Get-Content contracts\LIMITATIONS.md"
 
 **Tasks:**
 
-- [ ] Write deployment scripts: `Deploy.s.sol` (deploys all 7 contracts, sets up permissions, reads Anvil key at runtime, outputs addresses to JSON) and `Seed.s.sol` (funds 5 test accounts, mints BBT, stakes 3 as jurors)
-- [ ] Run deployment and seed scripts on Anvil: Start-Process anvil -WindowStyle Minimized, wait 3s, run Deploy.s.sol and Seed.s.sol with `--fork-url http://127.0.0.1:8545 --broadcast`, confirm addresses logged
-- [ ] Write scenario tests: `FullHappyPath.t.sol` (create program, commit, reveal, accept, pay, mint SBT), `RejectionAndDispute.t.sol` (reject, escalate, 3 jurors vote, resolve), `TimeoutEscalation.t.sol` (company silent, escalateAfterTimeout, jury resolves)
-- [ ] Write fuzz and invariant tests: fuzz Escrow deposit amounts and severities; invariants "Escrow balance >= locked amounts", "SBT non-transferable", "Court cannot resolve with hidden votes"
-- [ ] Run all tests including scenarios, fuzz, invariants: `forge test -vv`
-- [ ] Run `forge coverage` on entire `src/` (target 90%+)
-- [ ] Run Slither on all contracts, fix any new HIGH findings, document final state
-- [ ] Create or update `SECURITY.md`: summary of mitigations, test results, Slither summary, known limitations (juror randomness)
+- [x] Write deployment scripts: `Deploy.s.sol` (deploys all 7 contracts, sets up permissions, reads Anvil key at runtime, outputs addresses to JSON) and `Seed.s.sol` (funds 5 test accounts, mints BBT, stakes 3 as jurors)
+- [x] Run deployment and seed scripts on Anvil: Start-Process anvil -WindowStyle Minimized, wait 3s, run Deploy.s.sol and Seed.s.sol with `--fork-url http://127.0.0.1:8545 --broadcast`, confirm addresses logged
+- [x] Write scenario tests: `FullHappyPath.t.sol` (create program, commit, reveal, accept, pay, mint SBT), `RejectionAndDispute.t.sol` (reject, escalate, 3 jurors vote, resolve), `TimeoutEscalation.t.sol` (company silent, escalateAfterTimeout, jury resolves)
+- [x] Write fuzz and invariant tests: fuzz Escrow deposit amounts and severities; invariants "Escrow balance >= locked amounts", "SBT non-transferable", "Court cannot resolve with hidden votes"
+- [x] Run all tests including scenarios, fuzz, invariants: `forge test -vv`
+- [x] Run `forge coverage` on entire `src/` (target 90%+)
+- [x] Run Slither on all contracts, fix any new HIGH findings, document final state
+- [x] Create or update `SECURITY.md`: summary of mitigations, test results, Slither summary, known limitations (juror randomness)
 
 **Exit Criteria:**
 - Deploy script works on Anvil and outputs addresses
@@ -482,21 +485,16 @@ powershell -NoProfile -Command "Get-Content contracts\LIMITATIONS.md"
 
 **Verification Commands:**
 ```powershell
-powershell -NoProfile -Command "Start-Process anvil -WindowStyle Minimized"
-powershell -NoProfile -Command "Start-Sleep -Seconds 3"
-forge script script\Deploy.s.sol --fork-url http://127.0.0.1:8545 --broadcast
-forge script script\Seed.s.sol --fork-url http://127.0.0.1:8545 --broadcast
-forge $1 --root contracts test --match-contract FullHappyPath -vvv
-forge $1 --root contracts test --match-contract RejectionAndDispute -vvv
-forge $1 --root contracts test --match-contract TimeoutEscalation -vvv
-forge $1 --root contracts test --match-contract Fuzz -vv
-forge $1 --root contracts test --match-contract Invariant -vv
-forge $1 --root contracts test -vv
-forge $1 --root contracts coverage --report summary
-slither contracts\src\ --filter-paths "test|script"
-powershell -NoProfile -Command "Get-Content contracts\SECURITY.md"
-powershell -NoProfile -Command "Get-Content contracts\LIMITATIONS.md"
+forge test --root D:\vaulthunt-escrow-blockchain-project\contracts --match-contract FullHappyPath -vvv
+forge test --root D:\vaulthunt-escrow-blockchain-project\contracts --match-contract RejectionAndDispute -vvv
+forge test --root D:\vaulthunt-escrow-blockchain-project\contracts --match-contract TimeoutEscalation -vvv
+forge test --root D:\vaulthunt-escrow-blockchain-project\contracts --match-contract Fuzz -vv
+forge test --root D:\vaulthunt-escrow-blockchain-project\contracts --match-contract Invariant -vv
+forge test --root D:\vaulthunt-escrow-blockchain-project\contracts -vv
+forge coverage --root D:\vaulthunt-escrow-blockchain-project\contracts --report summary --no-match-coverage "script|test"
 ```
+
+USER-RUN (needs a running Anvil in another terminal and its account 0 key): from the contracts folder run forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast --private-key <anvil account 0 key>, then forge script script/Seed.s.sol --rpc-url http://127.0.0.1:8545 --broadcast. Slither is also user-run: from the contracts folder, slither . --filter-paths "test|script|lib".
 
 ---
 
