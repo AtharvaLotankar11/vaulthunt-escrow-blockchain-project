@@ -56,8 +56,10 @@ contract IntegrationTest is Test {
         escrow.payHunter(1, hunterA, CRITICAL);
         escrow.claimFor(hunterA);
 
-        assertEq(hunterA.balance, 5 ether); // funded dropped to 10 ETH after the withdrawal
-        assertEq(address(escrow).balance, 5 ether);
+        // The hunter gets the 10 ETH that was locked for them (50% of the 20 ETH pool at lock
+        // time), even though the company withdrew the free half in between.
+        assertEq(hunterA.balance, 10 ether);
+        assertEq(address(escrow).balance, 0);
     }
 
     function testRejectionPathCompanyKeepsEverything() public {

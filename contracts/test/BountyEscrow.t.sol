@@ -350,6 +350,42 @@ contract BountyEscrowTest is Test {
         assertEq(address(escrow).balance, 7 ether);
     }
 
+    function testWithdrawingAfterLockCannotShrinkTheReward() public {
+        vm.prank(registry);
+        escrow.lock(1, HIGH); // 3 ETH reserved, pool was 10 ETH
+
+        vm.prank(company);
+        escrow.withdraw(7 ether); // the company takes everything that is free: pool is now 3 ETH
+        assertEq(escrow.fundedAmount(), 3 ether);
+
+        vm.prank(registry);
+        escrow.payHunter(1, hunter, HIGH);
+        assertEq(escrow.claimable(hunter), 3 ether); // still 30% of the 10 ETH promised, not 0.9
+    }
+
+    function testLowerSeverityStillUsesThePoolFromLockTime() public {
+        vm.prank(registry);
+        escrow.lock(1, HIGH);
+        vm.prank(company);
+        escrow.withdraw(7 ether);
+
+        vm.prank(registry);
+        escrow.payHunter(1, hunter, LOW);
+        assertEq(escrow.claimable(hunter), 0.5 ether); // 5% of 10 ETH, not 5% of 3
+    }
+
+    function testTopUpAfterLockRaisesAHigherSeverityPayment() public {
+        vm.prank(registry);
+        escrow.lock(1, LOW); // pool was 10 ETH
+        vm.deal(company, 10 ether);
+        vm.prank(company);
+        escrow.deposit{value: 10 ether}(); // pool is now 20 ETH
+
+        vm.prank(registry);
+        escrow.payHunter(1, hunter, HIGH);
+        assertEq(escrow.claimable(hunter), 6 ether); // 30% of the larger, current pool
+    }
+
     function testPayHunterOnlyRegistry() public {
         vm.prank(company);
         vm.expectRevert("BountyEscrow: caller is not the registry");

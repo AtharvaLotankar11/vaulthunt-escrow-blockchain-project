@@ -21,6 +21,7 @@ contract BountyEscrow is IBountyEscrow, Initializable, ReentrancyGuard {
 
     struct LockInfo {
         uint256 amount; // amount locked (or, after payment, amount paid)
+        uint256 pool; // `fundedAmount` at the moment of locking (protects the hunter, see payHunter)
         bool locked; // true while funds are reserved for a report
         bool settled; // true once the report is paid or released
     }
@@ -123,6 +124,7 @@ contract BountyEscrow is IBountyEscrow, Initializable, ReentrancyGuard {
         require(unlockedBalance() >= amount, "BountyEscrow: insufficient unlocked funds");
 
         info.amount = amount;
+        info.pool = fundedAmount;
         info.locked = true;
         totalLocked += amount;
 
@@ -141,12 +143,18 @@ contract BountyEscrow is IBountyEscrow, Initializable, ReentrancyGuard {
         LockInfo storage info = _locks[reportId];
         require(!info.settled, "BountyEscrow: report already settled");
 
+        // The reward is a percentage of the pool. The pool the company PROMISED when the report
+        // was locked can never be used against the hunter: if the company withdrew unlocked funds
+        // in the meantime, the pool recorded at lock time is used; if it topped up, the larger
+        // current pool is used.
+        uint256 pool = fundedAmount;
         if (info.locked) {
             totalLocked -= info.amount;
             info.locked = false;
+            if (info.pool > pool) pool = info.pool;
         }
 
-        uint256 amount = rewardFor(severity);
+        uint256 amount = (pool * _payoutBps[uint8(severity)]) / MAX_BPS;
         require(amount > 0, "BountyEscrow: reward is zero");
         require(unlockedBalance() >= amount, "BountyEscrow: insufficient unlocked funds");
 
