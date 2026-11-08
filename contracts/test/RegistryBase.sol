@@ -84,7 +84,8 @@ contract GasBurnReceiver is IERC721Receiver {
         registry.revealReport(reportId, "bafyGasBurner", contentHash, salt, severity);
     }
 
-    function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
+    function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4 selector) {
+        selector = bytes4(0);
         while (true) {}
     }
 

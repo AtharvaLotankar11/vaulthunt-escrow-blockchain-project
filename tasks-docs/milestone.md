@@ -162,6 +162,8 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | Date | Gate | Commands Run | Result | Notes |
 |---|---|---|---|---|
 | 2026-11-08 | Gate 0 | forge build, verify folders, check .gitignore, verify no .env | PASS | All tools verified, folders created, OpenZeppelin v5.7.0 installed, no secrets in tracked files |
+| 2026-11-08 | Gate 1 | forge test 33/33, coverage 98.59% lines, slither 0 High (user-run) | PASS | BountyToken, ReputationSBT, PlatformTreasury complete with tests, soulbound verified, no HIGH findings |
+| 2026-11-08 | Gate 2 | forge test 99/99, coverage 99.5% lines, slither 0 High (user-run) | PASS | BountyFactory and BountyEscrow complete, pull-payment pattern, reentrancy-safe |
 
 ---
 
@@ -199,6 +201,7 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | 2026-11-08 | 6 | Merge tasks: combine Next.js init + Tailwind check, combine deps install + shadcn, combine CSS + Tailwind config, combine sync-abis write + run (13 tasks → 9 tasks) | Reduce task count per phase to ≤10 | 6 |
 | 2026-11-08 | 8 | Merge tasks: combine 3 page creations, combine LiveFeed + toast + integration, combine 3 test tasks (11 tasks → 5 tasks) | Reduce task count per phase to ≤10 | 8 |
 | 2026-11-08 | 0,1 | Delete forge init samples (Counter.sol, Counter.t.sol, Counter.s.sol) before Phase 1 work | Clean slate for actual contracts | 1 |
+| 2026-11-08 | Phase 2 | payHunter now only credits; ETH is sent by claimFor or claim | Slither reentrancy-eth High | 3, 4, 5, 7, 8 |
 
 ---
 
@@ -266,9 +269,9 @@ powershell -NoProfile -Command "Get-Content README.md"
 
 ---
 
-## [ ] Phase 1: Token, Reputation SBT, Treasury contracts and tests
+## [x] Phase 1: Token, Reputation SBT, Treasury contracts and tests
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 
 **Goal:** Implement and test the three foundational contracts: BountyToken (ERC-20 for staking/fees), ReputationSBT (ERC-721 soulbound for hunter badges), and PlatformTreasury (holds fees and slashed stakes). These have no dependencies on other contracts.
 
@@ -313,9 +316,9 @@ slither contracts\src\ --filter-paths "test|script" --exclude naming-convention,
 
 ---
 
-## [ ] Phase 2: BountyFactory and BountyEscrow contracts and tests
+## [x] Phase 2: BountyFactory and BountyEscrow contracts and tests
 
-**Status:** NOT_STARTED
+**Status:** DONE
 
 **Goal:** Implement the factory that creates program escrows (EIP-1167 minimal proxies) and the escrow contract that locks funds, tracks severity tiers, and releases payment. Test creation, funding, and basic payout flows.
 
