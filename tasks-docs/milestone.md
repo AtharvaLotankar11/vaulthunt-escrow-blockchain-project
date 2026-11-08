@@ -168,6 +168,7 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | 2026-11-08 | Gate 4 | forge test 254/254, coverage 99.84% lines, slither 0 High (user-run) | PASS | DisputeCourt with staking, voting, verdict application, tie-break rules complete |
 | 2026-11-08 | Gate 5 | forge test 289/289, coverage 99.82% lines, slither 0 High, Deploy and Seed run on Anvil (user-run) | PASS | evidence in SECURITY.md |
 | 2026-11-08 | Phase 6-7 | pnpm lint and build OK; program created, encrypted report submitted, accepted and paid on Anvil (user-run) | PASS | App loads, wallet connects, live chain data, Report #1 Paid, Badge #0, 50 XP verified |
+| 2026-11-08 | Phase 8 | dispute, hidden jury votes, reveal, verdict and payout completed on Anvil through the UI (user-run); automated UI test 39/39 | PASS | Jury room, profile, leaderboard, live feed, demo time-travel complete |
 
 ---
 
@@ -215,6 +216,8 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | 2026-11-08 | Phase 6 | RainbowKit dropped; wallet button built on wagmi's injected connector; wagmi pinned ^2.19.5 | RainbowKit 2.2.x needs wagmi 2 and its connectors break the Next.js 16 build | 7,8,9 |
 | 2026-11-08 | Phase 6 | Tailwind v4 CSS tokens; shadcn/ui deferred; pnpm-workspace.yaml allowBuilds; fonts use fallbacks (A-3); glass arc is SVG | v4 is CSS-first; pnpm 12 needs build approvals; no font files or image assets | 6,7,9 |
 | 2026-11-08 | Phase 7 | 8th contract ProgramDirectory; reports and profiles via /api/ipfs (local store, Pinata if PINATA_JWT is set); useTx adds 30% gas headroom | contracts had nowhere to store the name and public key; works without any account; juror-draw gas varies | 8,10 |
+| 2026-11-08 | Phase 8 | Built together with Phase 7. Jury room, profile, leaderboard, live feed and demo time-travel with exact jump buttons | user wanted the full multi-page app at once | 9,10 |
+| 2026-11-08 | Phase 8 | Anvil clock read from the pending block; queries never pause when the browser is offline; pages show Loading instead of crashing | found while running the dispute demo | 9,10 |
 
 ---
 
@@ -614,9 +617,9 @@ cd ..
 
 ---
 
-## [ ] Phase 8: Dispute and jury room UI, reputation badge and leaderboard, live activity feed
+## [x] Phase 8: Dispute and jury room UI, reputation badge and leaderboard, live activity feed
 
-**Status:** NOT_STARTED
+**Status:** DONE
 
 **Goal:** Build the dispute escalation and jury voting UI (jury room with countdown and vote reveal animation), hunter profile page showing reputation SBT badge and level, global leaderboard, and a live activity feed driven by contract events. Make the app feel "alive" per PRD section 9.
 
@@ -637,15 +640,15 @@ cd ..
 
 **Tasks:**
 
-- [ ] Create `web/src/app/disputes/[caseId]/page.js`: jury room UI per design.md 7.6 (centered layout, case title, juror avatars/identicons, countdown timer from block.timestamp + voting period, commit vote form with hidden input + hash, reveal vote form, show votes after all revealed, verdict display)
-- [ ] Create `web/src/app/profile/[address]/page.js`: hunter profile page (reputation badge with level, XP bar using design.md tokens: blue gradient on slate track, timeline of accepted reports using flow chips, total earnings display)
-- [ ] Create `web/src/app/leaderboard/page.js`: leaderboard table (top hunters by XP or earnings, rank displayed in display-m numerals per design.md 7.7, sortable)
-- [ ] Create `web/src/components/LiveFeed.js`: scrolling ticker component per design.md 7.8 (listens to contract events ReportAccepted, Paid, DisputeResolved, LevelUp via viem `watchContractEvent`, displays short messages like "Hunter 0x4f...a2 earned 0.8 ETH", pausable on hover)
-- [ ] Integrate LiveFeed into layout or home page
-- [ ] Create toast component: design.md 7.8 (slate surface, magenta left bar, auto-dismiss 5s), trigger on tx confirm/fail
-- [ ] Add "Escalate" and "Escalate after timeout" actions to company dashboard: if report status is Rejected, hunter can call Registry.escalate; if reviewDeadline passed and status still UnderReview, hunter (or anyone) can call Registry.escalateAfterTimeout per D3
-- [ ] Test dispute flow: reject a report, hunter escalates, 3 jurors commit and reveal votes (manual with 3 browser profiles or test script), verify verdict and payout
-- [ ] Test profile page, leaderboard, and live feed: mint reputation SBT (via accepted report or direct contract call), load profile and see badge with level, check leaderboard order with multiple hunters at different levels, trigger contract events and verify live feed updates in real time
+- [x] Create `web/src/app/disputes/[caseId]/page.js`: jury room UI per design.md 7.6 (centered layout, case title, juror avatars/identicons, countdown timer from block.timestamp + voting period, commit vote form with hidden input + hash, reveal vote form, show votes after all revealed, verdict display)
+- [x] Create `web/src/app/profile/[address]/page.js`: hunter profile page (reputation badge with level, XP bar using design.md tokens: blue gradient on slate track, timeline of accepted reports using flow chips, total earnings display)
+- [x] Create `web/src/app/leaderboard/page.js`: leaderboard table (top hunters by XP or earnings, rank displayed in display-m numerals per design.md 7.7, sortable)
+- [x] Create `web/src/components/LiveFeed.js`: scrolling ticker component per design.md 7.8 (listens to contract events ReportAccepted, Paid, DisputeResolved, LevelUp via viem `watchContractEvent`, displays short messages like "Hunter 0x4f...a2 earned 0.8 ETH", pausable on hover)
+- [x] Integrate LiveFeed into layout or home page
+- [x] Create toast component: design.md 7.8 (slate surface, magenta left bar, auto-dismiss 5s), trigger on tx confirm/fail
+- [x] Add "Escalate" and "Escalate after timeout" actions to company dashboard: if report status is Rejected, hunter can call Registry.escalate; if reviewDeadline passed and status still UnderReview, hunter (or anyone) can call Registry.escalateAfterTimeout per D3
+- [x] Test dispute flow: reject a report, hunter escalates, 3 jurors commit and reveal votes (manual with 3 browser profiles or test script), verify verdict and payout
+- [x] Test profile page, leaderboard, and live feed: mint reputation SBT (via accepted report or direct contract call), load profile and see badge with level, check leaderboard order with multiple hunters at different levels, trigger contract events and verify live feed updates in real time
 
 **Exit Criteria:**
 - Jury room page displays case, accepts votes, shows countdown, reveals votes, displays verdict

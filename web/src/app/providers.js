@@ -7,7 +7,9 @@ import { ToastProvider } from "@/components/ui/Toasts";
 import { wagmiConfig } from "@/lib/wagmi";
 
 export function Providers({ children }) {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () => new QueryClient({ defaultOptions: { queries: { networkMode: "always", retry: 1 }, mutations: { networkMode: "always" } } }),
+  );
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>

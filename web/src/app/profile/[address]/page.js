@@ -47,7 +47,7 @@ export default function ProfilePage() {
             <div className="vault__locked" style={{ width: `${progress}%` }} />
           </div>
           <p className="text-muted">{next ? `${next - xp} XP to ${LEVELS[level]}` : "Top level reached."}</p>
-          <p>{mine.length} reports · {paid} paid</p>
+          <p>{mine.length} {mine.length === 1 ? "report" : "reports"} · {paid} paid</p>
           <p className="field-hint">XP: Low 10, Medium 25, High 50, Critical 100. The badge cannot be transferred or sold.</p>
         </Card>
       </div>

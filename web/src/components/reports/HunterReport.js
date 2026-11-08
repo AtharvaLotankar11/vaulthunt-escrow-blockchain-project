@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useAccount } from "wagmi";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
+import { DemoJump } from "@/components/layout/DemoJump";
 import { Countdown } from "@/components/ui/Countdown";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { S, SEVERITY, awaitingCompany } from "@/lib/chain";
@@ -69,6 +70,7 @@ export function HunterReport({ report, programName, now, registryConfig, courtCo
       {awaitingCompany(report.status) && (
         <div className="grid gap-3">
           <p className="text-sm text-muted">Waiting for the company. Its deadline <Countdown to={report.reviewDeadline} now={now} passedLabel="has passed" />. Your reward ({SEVERITY[report.claimedSeverity]}) is locked for you meanwhile.</p>
+          {now !== undefined && now <= report.reviewDeadline && <DemoJump to={report.reviewDeadline + 1}>Demo: jump past the company&apos;s deadline</DemoJump>}
           {now !== undefined && now > report.reviewDeadline && (
             <div>
               <button type="button" className="btn btn--sm" disabled={act.busy} onClick={() => registryCall("Send to the jury (company timed out)", "escalateAfterTimeout")}>The company did not answer: go to the jury</button>

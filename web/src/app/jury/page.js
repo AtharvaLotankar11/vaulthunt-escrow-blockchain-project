@@ -32,7 +32,9 @@ export default function JuryPage() {
           <JurorPanel />
 
           <h2 className="display-m mt-16 !text-4xl">Cases</h2>
-          {!cases || cases.length === 0 ? (
+          {cases === undefined ? (
+            <p className="mt-6 text-muted">Loading…</p>
+          ) : cases.length === 0 ? (
             <div className="mt-6"><StateMessage title="No cases">Disputes appear here when a hunter challenges a rejection or a company stays silent.</StateMessage></div>
           ) : (
             <div className="mt-6 overflow-x-auto">

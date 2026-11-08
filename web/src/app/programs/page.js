@@ -20,7 +20,7 @@ export default function ProgramsPage() {
         <NoDeployment chainId={chainId} />
       ) : isError ? (
         <ChainDown />
-      ) : isLoading ? (
+      ) : isLoading || programs === undefined ? (
         <p className="text-muted">Loading vaults…</p>
       ) : programs.length === 0 ? (
         <StateMessage title="No programs yet">Be the first: create a program and lock a reward.</StateMessage>

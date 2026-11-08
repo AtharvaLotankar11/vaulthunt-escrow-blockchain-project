@@ -41,7 +41,18 @@ export const useVotes = (caseId, jurors) =>
 
 /** The chain's own clock in seconds. On Anvil it can be moved forward, so countdowns use THIS, not the PC clock. */
 export const useChainTime = () =>
-  useChainQuery(["time"], async ({ publicClient }) => Number((await publicClient.getBlock()).timestamp), { refetchInterval: 3000 });
+  useChainQuery(
+    ["time"],
+    async ({ publicClient }) => {
+      try {
+        // The pending block carries the time the NEXT block will have, so the clock keeps moving between blocks.
+        return Number((await publicClient.getBlock({ blockTag: "pending" })).timestamp);
+      } catch {
+        return Number((await publicClient.getBlock()).timestamp);
+      }
+    },
+    { refetchInterval: 2000 },
+  );
 
 /** A program profile (name, scope, public encryption key) stored off-chain. */
 export function useProfile(uri) {

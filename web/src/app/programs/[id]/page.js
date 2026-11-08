@@ -83,7 +83,7 @@ export default function ProgramPage() {
 
   if (!book) return <section className="page-x py-12"><NoDeployment chainId={chainId} /></section>;
   if (isError) return <section className="page-x py-12"><ChainDown /></section>;
-  if (isLoading) return <section className="page-x py-12"><p className="text-muted">Loading…</p></section>;
+  if (isLoading || program === undefined) return <section className="page-x py-12"><p className="text-muted">Loading…</p></section>;
   if (!program) return <section className="page-x py-12"><StateMessage tone="alert" title="Not found">There is no program #{id}.</StateMessage></section>;
 
   const isOwner = address && address.toLowerCase() === program.owner.toLowerCase();

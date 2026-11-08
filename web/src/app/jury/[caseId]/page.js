@@ -10,6 +10,7 @@ import { Chip } from "@/components/ui/Chip";
 import { Countdown } from "@/components/ui/Countdown";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ChainDown, NoDeployment, StateMessage } from "@/components/ui/StateMessage";
+import { DemoJump } from "@/components/layout/DemoJump";
 import { NeedWallet } from "@/components/wallet/NeedWallet";
 import { CASE, SEVERITY } from "@/lib/chain";
 import { abis } from "@/lib/contracts";
@@ -41,6 +42,7 @@ export default function CasePage() {
 
   if (!book) return <section className="page-x py-12"><NoDeployment chainId={chainId} /></section>;
   if (isError) return <section className="page-x py-12"><ChainDown /></section>;
+  if (cases === undefined) return <section className="page-x py-12"><p className="text-muted">Loading…</p></section>;
   if (!courtCase) return <section className="page-x py-12"><StateMessage title="Not found">There is no case #{caseId}.</StateMessage></section>;
 
   const mine = address ? (votes ?? []).find((v) => v.juror.toLowerCase() === address.toLowerCase()) : undefined;
@@ -87,6 +89,8 @@ export default function CasePage() {
             {resolved ? "Closed." : committing ? <>Votes are hidden. Commit window closes <Countdown to={courtCase.commitDeadline} now={now} />.</> : revealing ? <>Reveal your vote. Window closes <Countdown to={courtCase.revealDeadline} now={now} />.</> : "Voting is over."}
           </p>
           <p className="text-sm text-muted">Revealed so far: hunter {courtCase.hunterVotes} · company {courtCase.companyVotes} · {courtCase.revealedCount} of {courtCase.jurors.length} revealed</p>
+          {!resolved && committing && <DemoJump to={courtCase.commitDeadline + 1}>Demo: jump to the reveal phase</DemoJump>}
+          {!resolved && revealing && <DemoJump to={courtCase.revealDeadline + 1}>Demo: jump to the end of voting</DemoJump>}
           <ul className="grid gap-2">
             {courtCase.jurors.map((j, i) => {
               const v = (votes ?? [])[i];

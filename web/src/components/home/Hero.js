@@ -10,8 +10,8 @@ export function Hero() {
     <section className="relative isolate flex min-h-[calc(100svh-5rem)] flex-col items-center justify-center overflow-hidden px-(--margin-x) py-16 text-center">
       <Ring className="-top-28 -right-28 size-[24rem] md:size-[34rem]" />
       <Ring flip className="-bottom-40 -left-32 size-[22rem] md:size-[32rem]" />
-      <GlassArc className="absolute left-[3%] top-[5%] w-36 md:w-64" />
-      <GlassArc flip className="absolute bottom-[6%] right-[3%] hidden w-64 md:block" />
+      <GlassArc className="absolute left-[2%] top-[4%] hidden w-40 xl:block 2xl:w-56" />
+      <GlassArc flip className="absolute bottom-[5%] right-[2%] hidden w-40 xl:block 2xl:w-56" />
 
       <h1 className="display-xl relative z-10">VaultHunt</h1>
 

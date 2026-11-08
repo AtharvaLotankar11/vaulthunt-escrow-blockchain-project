@@ -11,7 +11,7 @@ export function ProgramCard({ program }) {
   const { data: profile } = useProfile(program.profileURI);
   return (
     <Link href={`/programs/${program.id}`} className="block transition-transform hover:-translate-y-1">
-      <NotchedCard className="h-full p-6 pb-12">
+      <NotchedCard className="h-full p-6 pb-24">
         <div className="flex items-start justify-between gap-3">
           <h2 className="display-m !text-3xl">{profile?.name ?? `Program #${program.id}`}</h2>
           <Chip size="sm" tone={program.profileURI ? "glow" : "alert"}>{program.profileURI ? "Key published" : "No key yet"}</Chip>

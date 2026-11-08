@@ -19,7 +19,7 @@ export default function LeaderboardPage() {
         <NoDeployment chainId={chainId} />
       ) : isError ? (
         <ChainDown />
-      ) : isLoading ? (
+      ) : isLoading || rows === undefined ? (
         <p className="text-muted">Loading…</p>
       ) : !rows || rows.length === 0 ? (
         <StateMessage title="Nobody yet">Hunters appear here after their first report.</StateMessage>

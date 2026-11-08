@@ -6,18 +6,8 @@ import { useChainId } from "wagmi";
 import { Chip } from "@/components/ui/Chip";
 import { useChainTime } from "@/lib/hooks";
 import { duration } from "@/lib/format";
+import { anvilRpc } from "@/lib/devtools";
 import { anvil } from "@/lib/wagmi";
-
-async function rpc(method, params = []) {
-  const response = await fetch(anvil.rpcUrls.default.http[0], {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
-  });
-  const body = await response.json();
-  if (body.error) throw new Error(body.error.message);
-  return body.result;
-}
 
 /** Demo controls, only on the local Anvil chain: move the chain's clock forward so deadlines pass. */
 export function DevTools() {
@@ -33,8 +23,8 @@ export function DevTools() {
     setBusy(true);
     setError("");
     try {
-      await rpc("evm_increaseTime", [seconds]);
-      await rpc("evm_mine");
+      await anvilRpc("evm_increaseTime", [seconds]);
+      await anvilRpc("evm_mine");
       await queryClient.invalidateQueries({ queryKey: ["vh"] });
     } catch (e) {
       setError(e.message);
