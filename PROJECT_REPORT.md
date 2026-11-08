@@ -214,7 +214,7 @@ Evidence on Etherscan (Registry events): `ReportCommitted`, `ReportRevealed` (cl
 ![Registry events: payment](screenshots/02-etherscan-registry-paid.png)
 ![Registry events: commit and deployment](screenshots/03-etherscan-registry-commit-deploy.png)
 
-Transaction links (fill in from the Registry's Events tab): commit `____`, reveal `____`, accept and pay `____`.
+   Transaction links: [commit](https://sepolia.etherscan.io/tx/0x39c3f3c755134ceacde0ec65504ae3145de3b22c7c97e5a858acba2aa5d58c7c), [reveal](https://sepolia.etherscan.io/tx/0x8d398e84ba1112deb9d1f691d21ab7356b26871c7d870d256f8406a50da873cf), [accept and pay](https://sepolia.etherscan.io/tx/0x03ace2c806bc9d3257d2589ee60dadd5eff376c2ddfcd3e61cd6c8170f6e667e).
 
 The jury path was executed on the local chain (where time can be advanced) and covered by the automated scenario tests; it was not repeated on Sepolia because its windows run in real time.
 

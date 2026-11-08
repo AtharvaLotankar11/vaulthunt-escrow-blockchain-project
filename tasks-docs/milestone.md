@@ -27,7 +27,7 @@ The path is `tasks-docs\milestone.md`. Rules live in the Protocol section of thi
 | 11 | Documentation, report, presentation, demo video | 6 | 1 |
 | **Total** | **12 phases** | **96 tasks** | **24 prerequisites** |
 
-All phases have ≤10 tasks. Updated 2026-11-08 Batch 2.
+All phases have ≤10 tasks. Updated 2026-11-08 Batch 2. Phase 11: 5 of 6 done + 1 waived (demo video); project total: 95 of 96 done + 1 waived.
 
 ---
 
@@ -171,6 +171,7 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | 2026-11-08 | Phase 8 | dispute, hidden jury votes, reveal, verdict and payout completed on Anvil through the UI (user-run); automated UI test 39/39 | PASS | Jury room, profile, leaderboard, live feed, demo time-travel complete |
 | 2026-11-08 | Phase 9 | pnpm lint and build OK; automated UI test 42/42 including Demo Mode; layout checked at 1440, 1024, 768 and 390 and keyboard focus checked (user-run) | PASS | not checked in a browser: reduced motion; fonts use fallbacks (A-3), see DESIGN_NOTES.md |
 | 2026-11-08 | Audit Gate 10 | forge test 299/299; coverage 99.82% lines, 97.03% branches; Slither 0 High (2 Medium reviewed); pnpm lint and build pass; no secrets tracked; 8 contracts verified on Sepolia | PASS | known gaps: fonts use fallbacks (A-3); jury path run on the local chain only, not repeated on Sepolia |
+| 2026-11-08 | Final close-out | all phases reviewed; Phase 11 done with one task waived (demo video); deliverables present: README, PROJECT_REPORT, SECURITY, LIMITATIONS, Sepolia addresses, presentation (stored outside the repository), screenshots | PASS | known gaps: no recorded video (waived); jury path run on the local chain only, not repeated on Sepolia; fonts use fallbacks (A-3); contracts not professionally audited |
 
 ---
 
@@ -223,6 +224,7 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | 2026-11-08 | Phase 9 | Framer Motion animations, reduced-motion support, page transitions; /demo Demo Mode plays the full scenario with Anvil accounts and no wallet | polish and presentations | 10,11 |
 | 2026-11-08 | Phase 9 | Alerts are white text with a magenta bar; tablet layouts stack until 1280px; program names shown instead of ids | design checklist: magenta only on bars, dashes and focus | 10 |
 | 2026-11-08 | Phase 10 | README.md and PROJECT_REPORT.md written from the audit results | deliverables | 11 |
+| 2026-11-08 | Phase 11 | Presentation built on the supplied design; repository check list added; demo video waived by the team | user decision | none |
 
 ---
 
@@ -762,9 +764,9 @@ git status
 
 ---
 
-## [ ] Phase 11: Documentation, report, presentation, and demo video
+## [x] Phase 11: Documentation, report, presentation, and demo video
 
-**Status:** NOT_STARTED
+**Status:** DONE (demo video waived)
 
 **Goal:** Write complete README with setup steps, create final project report and presentation materials, record a 5-minute demo walkthrough. Prepare all deliverables for submission.
 
@@ -777,12 +779,12 @@ git status
 
 **Tasks:**
 
-- [ ] Write complete `README.md`: project summary, folder structure, setup steps (clone, install Foundry, install pnpm, install dependencies, configure `.env`, deploy or use provided Sepolia addresses), how to run tests, how to run frontend, contract addresses on Sepolia, links to Etherscan, team members, licenses, limitations (juror randomness, demo encryption), known issues
-- [ ] Write `PROJECT_REPORT.md` or `.pdf`: architecture, security analysis (test results, Slither summary), test coverage, design decisions, limitations, syllabus mapping (PRD section 14), screenshots, Sepolia tx links
-- [ ] Create presentation deck (slides): problem, solution, architecture, contract map, demo screens, security measures, test results, live demo plan, Q&A prep (viva one-liners from PRD section 20)
-- [ ] Record 5-minute demo video: show landing page, create program, submit report, accept, show payout, show live feed, jury room (optional if time tight), leaderboard, narrate key points
-- [ ] Run Audit Gate 11: verify README complete, PROJECT_REPORT complete, presentation deck ready, demo video recorded, repo clean
-- [ ] Final check: no private keys or API secrets in tracked files, `.env.example` up to date, all docs in `tasks-docs/` untouched (or changes approved and logged), record audit result in Audit Log
+- [x] Write complete `README.md`: project summary, folder structure, setup steps (clone, install Foundry, install pnpm, install dependencies, configure `.env`, deploy or use provided Sepolia addresses), how to run tests, how to run frontend, contract addresses on Sepolia, links to Etherscan, team members, licenses, limitations (juror randomness, demo encryption), known issues
+- [x] Write `PROJECT_REPORT.md` or `.pdf`: architecture, security analysis (test results, Slither summary), test coverage, design decisions, limitations, syllabus mapping (PRD section 14), screenshots, Sepolia tx links
+- [x] Create presentation deck (slides): problem, solution, architecture, contract map, demo screens, security measures, test results, live demo plan, Q&A prep (viva one-liners from PRD section 20) (stored outside the repository, confirmed by the user)
+- [ ] Record 5-minute demo video: show landing page, create program, submit report, accept, show payout, show live feed, jury room (optional if time tight), leaderboard, narrate key points — SKIPPED: waived by the team; the local Demo Mode page and web\DEMO_SCRIPT.md are the live-demo substitute
+- [x] Run Audit Gate 11: verify README complete, PROJECT_REPORT complete, presentation deck ready, demo video recorded, repo clean
+- [x] Final check: no private keys or API secrets in tracked files, `.env.example` up to date, all docs in `tasks-docs/` untouched (or changes approved and logged), record audit result in Audit Log
 
 **Exit Criteria:**
 - README complete with setup steps and Sepolia addresses
