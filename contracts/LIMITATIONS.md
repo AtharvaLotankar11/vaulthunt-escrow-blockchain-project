@@ -27,3 +27,10 @@ They enforce process and payment. Humans (the company, then the jury) decide.
 - Reveal locks funds: a program without enough unlocked ETH cannot accept more revealed reports until it is topped up.
 - The Court's `reserve` (which pays the fee of timeout cases) must be funded by someone; with an empty reserve a timeout case simply has no fee and no reward for jurors except slashed stakes.
 - Testnet only. No audit has been done; do not use with real funds.
+
+## Added in Phase 7 and 8 (the app)
+- **Program profiles live off-chain.** Only a pointer is on-chain (`ProgramDirectory`). With no Pinata key the app stores profiles and reports in a local folder on the machine running the web server, so only that machine can read them. Real IPFS needs a Pinata key.
+- **Secrets live in one browser.** The company's private key, a hunter's unrevealed report and a juror's vote are kept in that browser's localStorage. Clearing browser data loses them; the Company page offers a key backup. There is no recovery.
+- **Jurors cannot read the encrypted report.** They see only the hunter's public summary. A real system needs threshold encryption or a trusted environment so jurors can read the report without the company's key.
+- **Reports are encrypted for one company key.** There is no key rotation or multi-person access.
+- **Gas headroom.** Drawing jurors costs slightly different gas depending on block data, so the app adds 30% headroom to every transaction. Another client sending transactions with an exact estimate can occasionally fail on that call.

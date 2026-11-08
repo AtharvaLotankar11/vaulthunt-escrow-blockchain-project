@@ -40,7 +40,7 @@ A platform where companies lock bounty rewards in smart contracts, hackers submi
 
 ### Goals
 - Working end-to-end flow on a testnet: create bounty, submit, review, pay, dispute.
-- **7 smart contracts** that genuinely interact (faculty minimum is 5).
+- **8 smart contracts** that genuinely interact (faculty minimum is 5).
 - An interactive, real-time, visually strong dApp, not a static form page.
 - Security-aware design (reentrancy, front-running, access control) with tests to prove it.
 - Strong alignment to the syllabus (see section 14).
@@ -108,7 +108,7 @@ Disputed -> Voting -> Resolved -> Paid | Refunded
 
 ---
 
-## 7. Smart contract architecture (7 contracts)
+## 7. Smart contract architecture (8 contracts)
 
 | # | Contract | Standard / pattern | Responsibility |
 |---|---|---|---|
@@ -119,6 +119,7 @@ Disputed -> Voting -> Resolved -> Paid | Refunded
 | 5 | **DisputeCourt** | Staked jury, commit-reveal voting, slashing | Handles escalations: juror selection, voting, rewards and penalties. Its only effect on money is calling Registry.applyVerdict. |
 | 6 | **ReputationSBT** | ERC-721 *soulbound* (non-transferable) | Hunter level badges (Rookie, Hacker, Elite, Legend). Updated by the Registry (manager role) with accepted reports and severity. |
 | 7 | **PlatformTreasury** | Access-controlled vault | Collects small platform fee and slashed stakes; funds juror rewards; owned by multisig or timelock for demo. |
+| 8 | **ProgramDirectory** | Pointer registry (added in Phase 7) | Lets a program's owner publish an IPFS pointer to its public profile: name, scope and the PUBLIC encryption key hunters use. Holds no funds, has no admin. |
 
 ### Contract interaction map
 ```
@@ -204,7 +205,7 @@ The product must *feel alive*, not like a form on a page.
 | Local chain | Anvil / Hardhat node | Instant blocks for development |
 | Testnet | Sepolia | Widely supported faucets and tools |
 | Frontend | **Next.js (React) + TypeScript** | Component-driven, interactive |
-| Wallet and chain access | **wagmi + viem + RainbowKit** | Modern, event watching built in |
+| Wallet and chain access | **wagmi + viem** (browser wallet, small custom connect button) | Modern, event watching built in |
 | UI and animation | Tailwind CSS + shadcn/ui + Framer Motion | Polished, fast to build |
 | Real-time data | Contract event subscriptions via viem (optionally The Graph subgraph) | Powers live feed and leaderboard |
 | File storage | **IPFS** via Pinata or web3.storage | Large encrypted reports off-chain |
@@ -272,7 +273,7 @@ The product must *feel alive*, not like a form on a page.
 | Syllabus module | Where it appears in the project |
 |---|---|
 | **1. DLT and Blockchain** (hashing, Merkle tree, consensus) | Report hash commitments; explanation of why Ethereum finality is trusted |
-| **3. Ethereum and Smart Contracts** (EVM, MetaMask, Solidity, Remix, test networks, DApps, gas, vulnerabilities) | All 7 contracts, wallet flow, Sepolia deployment, gas optimisation, vulnerability handling |
+| **3. Ethereum and Smart Contracts** (EVM, MetaMask, Solidity, Remix, test networks, DApps, gas, vulnerabilities) | All 8 contracts, wallet flow, Sepolia deployment, gas optimisation, vulnerability handling |
 | **5. Crypto Assets, NFTs** (ERC20, ERC721, tokenization) | BountyToken (ERC-20), ReputationSBT (ERC-721 variant) |
 | **6. DeFi, DAO, Security** (staking, governance tokens, DAO, wallet attacks, EVM security, zk-SNARKs) | Juror staking and slashing, DAO-style jury, security testing, optional zk badge proof |
 | **4. Hyperledger** | Not used. Add a short comparison slide: why a public chain suits open bounty trust |
@@ -341,7 +342,7 @@ The product must *feel alive*, not like a form on a page.
 ## 20. Viva-ready one-liners
 
 - **Why blockchain?** The money and the verdict shouldn't belong to one party.
-- **Why 7 contracts?** Separation of concerns: money, evidence, judgement, and reputation each have their own contract.
+- **Why 8 contracts?** Separation of concerns: money, evidence, judgement, and reputation each have their own contract.
 - **Why commit-reveal?** Proves "I found it first" without exposing the bug.
 - **Why soulbound reputation?** Reputation you can buy isn't reputation.
 - **What can't it do?** It cannot decide if a bug is real; it only enforces a fair process.

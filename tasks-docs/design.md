@@ -224,7 +224,7 @@ Because `clip-path` cuts off a CSS border, draw the hairline with an **inline SV
 All screens keep the midnight background, 81 px-style margins, one giant heading per screen, and glow only where something is important.
 
 ### 7.1 Top navigation
-- Transparent over `--bg`, logo lockup left, links in label style (20 px uppercase is too large here: use 14 px uppercase, same font), **RainbowKit connect button** restyled: slate chip, magenta left bar, white text. Connected state shows short address and a small blue-glow dot.
+- Transparent over `--bg`, logo lockup left, links in label style (20 px uppercase is too large here: use 14 px uppercase, same font), **wallet connect button** (built on wagmi, no wallet-picker library): slate chip, magenta left bar, white text. Connected state shows short address and a small blue-glow dot.
 
 ### 7.2 Programs page (`/programs`)
 - Grid of **Vault cards**: notched card shape, slate surface, program name (display-m scaled down to 28 to 32 px), reward range, and an **animated fill bar** (blue gradient rising) showing locked funds. Hover: glass arc nudges, hairline outline appears.

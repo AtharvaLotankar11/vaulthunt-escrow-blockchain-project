@@ -50,11 +50,13 @@ contract Deploy is Script, DeployBase {
         console.log("BountyEscrow impl", d.factory.implementation());
         console.log("ReportRegistry   ", address(d.registry));
         console.log("DisputeCourt     ", address(d.court));
+        console.log("ProgramDirectory ", address(d.directory));
     }
 
     function _write(Deployed memory d) internal {
         string memory key = "deployment";
         vm.serializeUint(key, "chainId", block.chainid);
+        vm.serializeUint(key, "deploymentBlock", block.number); // the app reads events from here
         vm.serializeAddress(key, "deployer", d.token.owner());
         vm.serializeAddress(key, "token", address(d.token));
         vm.serializeAddress(key, "treasury", address(d.treasury));
@@ -62,7 +64,8 @@ contract Deploy is Script, DeployBase {
         vm.serializeAddress(key, "factory", address(d.factory));
         vm.serializeAddress(key, "escrowImplementation", d.factory.implementation());
         vm.serializeAddress(key, "registry", address(d.registry));
-        string memory json = vm.serializeAddress(key, "court", address(d.court));
+        vm.serializeAddress(key, "court", address(d.court));
+        string memory json = vm.serializeAddress(key, "directory", address(d.directory));
 
         string memory path = string.concat("./deployments/", vm.toString(block.chainid), ".json");
         vm.writeJson(json, path);

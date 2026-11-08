@@ -1,0 +1,211 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   VaultHunt design tokens. Source: tasks-docs/design.md (section 2, 3, 12).
+   Colors are MEASURED from the template; see DESIGN_NOTES.md for what is
+   estimated or extended.
+------------------------------------------------------------------- */
+@theme {
+  --color-bg: #020020;
+  --color-surface: #22213d;
+  --color-accent: #ff01dc;
+  --color-blue-peak: #0f00d0;
+  --color-text: #ffffff;
+  --color-muted: rgb(255 255 255 / 0.72);
+
+  /* Telegraf / Open Sauce One are used when installed; otherwise these fallbacks apply
+     (assumption A-3: system fallbacks until licences are confirmed). */
+  --font-display: "Telegraf", "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Open Sauce One", "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+:root {
+  --margin-x: clamp(1.25rem, 5.6vw, 5.06rem);
+  --gradient-panel: linear-gradient(90deg, #0f00cc 0%, #0b0099 40%, #050046 80%, #020020 100%);
+  --gradient-hex-glow: linear-gradient(180deg, rgb(2 0 32 / 0) 0%, #0f00d0 100%);
+}
+
+html {
+  background: var(--color-bg);
+  color: var(--color-text);
+  color-scheme: dark;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  min-height: 100svh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.4;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* One focus style everywhere: 2px magenta outline, 2px offset (design.md section 7.9) */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* ---------------- typography (design.md section 3) ---------------- */
+.display-xl,
+.display-l,
+.display-m {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.display-xl { font-size: clamp(3.5rem, 11.4vw, 10.3rem); }
+.display-l  { font-size: clamp(3rem, 8.8vw, 7.9rem); }
+.display-m  { font-size: clamp(2.25rem, 6.3vw, 5.7rem); }
+
+.label {
+  font-size: 1.25rem;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.page-x { padding-inline: var(--margin-x); }
+
+/* ---------------- label chip (design.md section 5.2) ---------------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 60px;
+  padding: 0 2.25rem;
+  background: var(--color-surface);
+  border-left: 6px solid var(--color-accent);
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.chip--hero { border-right: 6px solid var(--color-accent); padding-inline: 3.25rem; }
+.chip--sm   { min-height: 40px; padding: 0 1rem; font-size: 0.875rem; }
+.chip--glow { background: linear-gradient(90deg, var(--color-blue-peak), #050046); }
+.chip--alert { background: transparent; box-shadow: inset 0 0 0 1px var(--color-accent); }
+@media (max-width: 640px) {
+  .chip { min-height: 48px; padding: 0 1.25rem; font-size: 1rem; }
+  .chip--hero { padding-inline: 1.75rem; }
+}
+
+/* ---------------- gradient callout panel (design.md section 5.5) ---------------- */
+.gradient-panel {
+  background: var(--gradient-panel);
+  padding: 2rem 2rem 2rem clamp(1.5rem, 6vw, 6.25rem);
+}
+
+/* ---------------- buttons (design.md section 7.9) ---------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0 1.5rem;
+  background: var(--color-blue-peak);
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  border: 0;
+  transition: filter 0.2s ease, background 0.2s ease;
+}
+.btn:hover { filter: brightness(1.25); }
+.btn--ghost { background: transparent; box-shadow: inset 0 0 0 1px #fff; }
+.btn--ghost:hover { background: var(--color-surface); filter: none; }
+
+/* ---------------- notched image card (design.md section 5.6, ESTIMATED shape) ------ */
+.notched {
+  border-radius: 2.5rem;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 26% 100%, 14% 80%, 0 80%);
+  background: var(--color-surface);
+}
+
+/* ---------------- hairlines (design.md section 5.9) ---------------- */
+.hairline { background: #fff; height: 1px; }
+.hairline-v { background: #fff; width: 1px; }
+
+/* ---------------- glass arc floating animation ---------------- */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-12px) rotate(2deg); }
+}
+.float { animation: float 7s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Notch-safe page edges on phones (design.md section 12 / publishing notes) */
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ---------------- app surfaces: cards, fields, vault bars, ticker ---------------- */
+.card {
+  background: var(--color-surface);
+  padding: 1.5rem;
+  border-left: 6px solid var(--color-accent);
+}
+.card--plain { border-left: 0; }
+
+.field {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  padding: 0.75rem 1rem;
+  background: var(--color-bg);
+  color: #fff;
+  border: 0;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.28);
+  font: inherit;
+}
+.field:disabled { opacity: 0.5; }
+textarea.field { min-height: 9rem; resize: vertical; }
+.field-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+}
+.field-hint { margin-top: 0.4rem; color: var(--color-muted); font-size: 0.8125rem; }
+
+.btn[disabled] { opacity: 0.45; cursor: not-allowed; filter: none; }
+.btn--accent { background: var(--color-accent); }
+.btn--danger { background: transparent; box-shadow: inset 0 0 0 1px var(--color-accent); }
+.btn--danger:hover { background: var(--color-accent); filter: none; }
+.btn--sm { min-height: 40px; padding: 0 1rem; font-size: 0.875rem; }
+
+.vault { display: flex; height: 10px; background: rgb(255 255 255 / 0.15); }
+.vault__locked { background: var(--color-accent); }
+.vault__free { background: var(--color-blue-peak); }
+
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.ticker__track { display: flex; width: max-content; animation: ticker 40s linear infinite; }
+.ticker:hover .ticker__track { animation-play-state: paused; }
+
+table.data { width: 100%; border-collapse: collapse; }
+table.data th { text-align: left; font-size: 0.8125rem; text-transform: uppercase; color: var(--color-muted); padding: 0.5rem 0.75rem 0.5rem 0; }
+table.data td { padding: 0.75rem 0.75rem 0.75rem 0; border-top: 1px solid rgb(255 255 255 / 0.12); vertical-align: top; }

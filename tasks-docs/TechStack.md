@@ -9,11 +9,11 @@
 
 | Layer | Tool | Its one job | Serves PRD feature |
 |---|---|---|---|
-| **Contracts** | **Solidity + OpenZeppelin** | Write the 7 contracts using audited building blocks | All on-chain logic (Escrow, Registry, Court, SBT, Token, Factory, Treasury) |
+| **Contracts** | **Solidity + OpenZeppelin** | Write the 8 contracts using audited building blocks | All on-chain logic (Escrow, Registry, Court, SBT, Token, Factory, Treasury, ProgramDirectory) |
 | **Dev and test** | **Foundry** (forge, anvil, cast) | Compile, test, fuzz, deploy, and run a local chain | Testing (PRD section 13), deployment |
 | **Frontend** | **Next.js + JavaScript** | The app itself: pages, routing, small server routes | Dashboards, program pages, report flow |
 | **Frontend UI** | **Tailwind + shadcn/ui + Framer Motion** | Look, feel, animation | Vault animation, jury room, live feed (PRD section 9) |
-| **Wallet and chain link** | **wagmi + viem + RainbowKit** | Connect MetaMask, send transactions, read state, listen to events | Wallet connect, live activity ticker |
+| **Wallet and chain link** | **wagmi + viem** | Connect MetaMask, send transactions, read state, listen to events | Wallet connect, live activity ticker |
 | **Storage** | **IPFS via Pinata** | Hold encrypted report files | Private report storage |
 | **Encryption** | **Web Crypto API** (built into the browser) | Encrypt report before upload, decrypt after | Report privacy |
 | **Network** | **Anvil (local) then Sepolia (testnet)** | Where contracts live | Demo and submission |
@@ -86,10 +86,11 @@ Solidity is the syllabus language (Module 3). OpenZeppelin gives ready, audited 
 One framework gives routing, components, and small server routes (needed to keep the Pinata key secret). Plain JavaScript keeps the learning curve low: no type definitions to write, faster to build, easier for every team member to read.
 - *Trade-off:* JavaScript will not warn you at build time if you pass the wrong argument to a contract call. Reduce this risk with **ESLint** (comes with Next.js), by keeping all contract calls in one small `lib/contracts.js` file, and by testing each flow on Anvil early.
 
-### wagmi + viem + RainbowKit
+### wagmi + viem
 - **viem:** the low-level tool to read, write, and listen to the chain.
 - **wagmi:** React hooks on top of viem (`useWriteContract`, `useWatchContractEvent`).
-- **RainbowKit:** a ready wallet-connect modal. Saves days of UI work.
+- **Connect button:** a small custom component built on wagmi's own `injected` connector (MetaMask and other browser wallets). It also asks the wallet to add or switch to the Anvil network.
+- **Why not RainbowKit (decided in Phase 6):** RainbowKit 2.2.x needs wagmi 2.x, and its wallet connectors pull in optional payment SDKs that make the Next.js 16 production build fail. Dropping it removed the problem and a heavy dependency. Phone wallets (WalletConnect) are not supported; they can be added later if wanted. wagmi is pinned to `^2.19.5` (wagmi 3 is also published; this project was built and tested on 2.x).
 These three are designed as a set; treat them as one unit.
 
 ### Tailwind + shadcn/ui + Framer Motion
@@ -130,7 +131,7 @@ Develop and test on Anvil for speed, then deploy to Sepolia for the real public-
 ```
 vaulthunt/
 ├── contracts/                 # Foundry project
-│   ├── src/                   # the 7 contracts
+│   ├── src/                   # the 8 contracts
 │   ├── test/                  # unit, fuzz, invariant, scenario tests
 │   ├── script/                # Deploy.s.sol
 │   └── foundry.toml
@@ -160,7 +161,7 @@ anvil                 # start local chain (separate terminal)
 ```bash
 pnpm create next-app web --js --tailwind
 cd web
-pnpm add wagmi viem @tanstack/react-query @rainbow-me/rainbowkit framer-motion
+pnpm add wagmi@^2.19.5 viem @tanstack/react-query framer-motion lucide-react clsx tailwind-merge
 npx shadcn@latest init
 ```
 
@@ -177,7 +178,7 @@ SEPOLIA_RPC=            # from any RPC provider
 PRIVATE_KEY=            # test wallet only, never a real one
 ETHERSCAN_API_KEY=      # for contract verification
 PINATA_JWT=             # server-side only (Next.js route)
-NEXT_PUBLIC_WALLETCONNECT_ID=
+NEXT_PUBLIC_SEPOLIA_RPC=       # optional: a Sepolia RPC URL for the app (Phase 10)
 ```
 
 > Commands and package names change over time. Check each tool's official docs at build time.
@@ -199,7 +200,7 @@ NEXT_PUBLIC_WALLETCONNECT_ID=
 
 | PRD requirement | Covered by |
 |---|---|
-| 7 smart contracts | Solidity + OpenZeppelin |
+| 8 smart contracts | Solidity + OpenZeppelin |
 | Commit-reveal and private reports | Web Crypto + IPFS + `ReportRegistry` |
 | Automatic payout | `ReportRegistry.acceptReport` (company calls the Registry), paying through `BountyEscrow` |
 | Live, game-like UI | Next.js + Framer Motion + viem events |

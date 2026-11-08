@@ -34,6 +34,7 @@ Security notes for VaultHunt (testnet prototype). Read with `LIMITATIONS.md`.
 | ReputationSBT | Registry (owner after deployment) | mint, updateLevel |
 | DisputeCourt | nobody (no owner, no admin) | rules fixed at deployment |
 | PlatformTreasury | Deployer (owner) | withdraw ETH and tokens |
+| ProgramDirectory | Each program's owner | publish or change that program's profile pointer (name, scope, public key); no funds, no admin |
 
 The deployer keeps the token owner role and the Treasury. A production system would put these behind a multisig and timelock.
 

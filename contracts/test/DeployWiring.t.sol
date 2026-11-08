@@ -24,6 +24,7 @@ contract DeployWiringTest is Test, DeployBase {
         assertGt(address(d.factory).code.length, 0);
         assertGt(address(d.registry).code.length, 0);
         assertGt(address(d.court).code.length, 0);
+        assertGt(address(d.directory).code.length, 0);
         assertGt(d.factory.implementation().code.length, 0); // the escrow logic contract
     }
 
@@ -36,6 +37,7 @@ contract DeployWiringTest is Test, DeployBase {
         assertEq(d.court.registry(), address(d.registry));
         assertEq(address(d.court.token()), address(d.token));
         assertEq(d.court.treasury(), address(d.treasury));
+        assertEq(address(d.directory.factory()), address(d.factory));
     }
 
     function testParametersAreApplied() public view {

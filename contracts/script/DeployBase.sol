@@ -7,13 +7,14 @@ import {ReputationSBT} from "../src/ReputationSBT.sol";
 import {BountyFactory} from "../src/BountyFactory.sol";
 import {ReportRegistry} from "../src/ReportRegistry.sol";
 import {DisputeCourt} from "../src/DisputeCourt.sol";
+import {ProgramDirectory} from "../src/ProgramDirectory.sol";
 
 /// @notice The deployment logic, shared by the Deploy script and by the tests, so the tests
 ///         check the very same wiring that gets deployed.
 ///
-/// The seven contracts: BountyToken, PlatformTreasury, ReputationSBT, BountyFactory,
-/// ReportRegistry, DisputeCourt and the BountyEscrow logic contract (created by the Factory;
-/// every program is a cheap clone of it).
+/// The eight contracts: BountyToken, PlatformTreasury, ReputationSBT, BountyFactory,
+/// ReportRegistry, DisputeCourt, ProgramDirectory and the BountyEscrow logic contract (created
+/// by the Factory; every program is a cheap clone of it).
 abstract contract DeployBase {
     struct Params {
         uint256 initialSupply; // BBT minted to the deployer
@@ -30,6 +31,7 @@ abstract contract DeployBase {
         BountyFactory factory;
         ReportRegistry registry;
         DisputeCourt court;
+        ProgramDirectory directory;
     }
 
     /// @dev Short windows so a live demo does not have to wait days. For anything real, use
@@ -66,5 +68,8 @@ abstract contract DeployBase {
         d.factory.setRegistry(address(d.registry)); // programs obey only this Registry
         d.sbt.transferOwnership(address(d.registry)); // only the Registry mints and updates badges
         d.registry.setCourt(address(d.court)); // only this Court may deliver verdicts
+
+        // Last on purpose: adding it did not move the addresses of the contracts above.
+        d.directory = new ProgramDirectory(address(d.factory));
     }
 }

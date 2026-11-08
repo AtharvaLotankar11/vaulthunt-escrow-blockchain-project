@@ -167,6 +167,7 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | 2026-11-08 | Gate 3 | forge test 176/176, coverage 99.75% lines, slither 0 High (user-run) | PASS | ReportRegistry with commit-reveal, severity locking, badge minting, state machine complete |
 | 2026-11-08 | Gate 4 | forge test 254/254, coverage 99.84% lines, slither 0 High (user-run) | PASS | DisputeCourt with staking, voting, verdict application, tie-break rules complete |
 | 2026-11-08 | Gate 5 | forge test 289/289, coverage 99.82% lines, slither 0 High, Deploy and Seed run on Anvil (user-run) | PASS | evidence in SECURITY.md |
+| 2026-11-08 | Phase 6-7 | pnpm lint and build OK; program created, encrypted report submitted, accepted and paid on Anvil (user-run) | PASS | App loads, wallet connects, live chain data, Report #1 Paid, Badge #0, 50 XP verified |
 
 ---
 
@@ -211,6 +212,9 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | 2026-11-08 | Phase 4 | Court has no owner; tie after rejection goes to the company, after timeout to the hunter; verification contract is DisputeScenarios | design choice; matches the milestone command | 5,8 |
 | 2026-11-08 | 5 | BountyEscrow: payout uses the pool size recorded at lock time (never smaller) | scenario test found that withdrawing free funds could shrink a locked reward | 2, 3, 4, 7 |
 | 2026-11-08 | 5 | Deploy.s.sol signs with --private-key or --account; local windows are minutes; addresses go to contracts\deployments\<chainId>.json | safer and demo-friendly | 6, 9, 10 |
+| 2026-11-08 | Phase 6 | RainbowKit dropped; wallet button built on wagmi's injected connector; wagmi pinned ^2.19.5 | RainbowKit 2.2.x needs wagmi 2 and its connectors break the Next.js 16 build | 7,8,9 |
+| 2026-11-08 | Phase 6 | Tailwind v4 CSS tokens; shadcn/ui deferred; pnpm-workspace.yaml allowBuilds; fonts use fallbacks (A-3); glass arc is SVG | v4 is CSS-first; pnpm 12 needs build approvals; no font files or image assets | 6,7,9 |
+| 2026-11-08 | Phase 7 | 8th contract ProgramDirectory; reports and profiles via /api/ipfs (local store, Pinata if PINATA_JWT is set); useTx adds 30% gas headroom | contracts had nowhere to store the name and public key; works without any account; juror-draw gas varies | 8,10 |
 
 ---
 
@@ -498,9 +502,9 @@ USER-RUN (needs a running Anvil in another terminal and its account 0 key): from
 
 ---
 
-## [ ] Phase 6: Frontend foundation (Next.js JavaScript, design tokens and fonts per design.md, layout, wallet connect, sync-abis.js script)
+## [x] Phase 6: Frontend foundation (Next.js JavaScript, design tokens and fonts per design.md, layout, wallet connect, sync-abis.js script)
 
-**Status:** NOT_STARTED
+**Status:** DONE
 
 **Goal:** Initialize the Next.js app in `web/`, install dependencies (wagmi, viem, RainbowKit, Tailwind, shadcn/ui, Framer Motion), set up design tokens (colors, fonts, spacing) from design.md, create global layout with navigation and wallet connect button, write and test the `sync-abis.js` script that copies ABIs and addresses from Foundry output to the frontend.
 
@@ -553,9 +557,9 @@ pnpm --dir web lint
 
 ---
 
-## [ ] Phase 7: Core user flows (programs list, create program, submit report with Web Crypto and IPFS, company review)
+## [x] Phase 7: Core user flows (programs list, create program, submit report with Web Crypto and IPFS, company review)
 
-**Status:** NOT_STARTED
+**Status:** DONE
 
 **Goal:** Build the main interactive pages: browse programs, create a new program (company flow), submit a report (hunter two-step commit-reveal with client-side encryption and IPFS upload), and company review dashboard (accept/reject). Wire them to contracts via wagmi. Implement Web Crypto encryption and IPFS upload via Pinata.
 
