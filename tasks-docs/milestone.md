@@ -198,7 +198,7 @@ Give a summary (max 10 lines): what was built, files created or changed, how the
 | 2026-11-08 | 5 | Merge tasks: combine Deploy.s.sol + Seed.s.sol writes, combine their runs, merge 3 scenario tests, merge fuzz+invariant tests (13 tasks → 8 tasks) | Reduce task count per phase to ≤10 | 5 |
 | 2026-11-08 | 6 | Merge tasks: combine Next.js init + Tailwind check, combine deps install + shadcn, combine CSS + Tailwind config, combine sync-abis write + run (13 tasks → 9 tasks) | Reduce task count per phase to ≤10 | 6 |
 | 2026-11-08 | 8 | Merge tasks: combine 3 page creations, combine LiveFeed + toast + integration, combine 3 test tasks (11 tasks → 5 tasks) | Reduce task count per phase to ≤10 | 8 |
-| 2026-11-08 | 10, 11 | Split Phase 10 into Phase 10 (Sepolia deployment and final audit, 7 tasks) and Phase 11 (documentation, report, presentation, demo video, 5 tasks) | Separate deployment concerns from documentation deliverables; both phases now ≤10 tasks | 10, 11 |
+| 2026-11-08 | 0,1 | Delete forge init samples (Counter.sol, Counter.t.sol, Counter.s.sol) before Phase 1 work | Clean slate for actual contracts | 1 |
 
 ---
 
@@ -268,7 +268,7 @@ powershell -NoProfile -Command "Get-Content README.md"
 
 ## [ ] Phase 1: Token, Reputation SBT, Treasury contracts and tests
 
-**Status:** NOT_STARTED
+**Status:** IN_PROGRESS
 
 **Goal:** Implement and test the three foundational contracts: BountyToken (ERC-20 for staking/fees), ReputationSBT (ERC-721 soulbound for hunter badges), and PlatformTreasury (holds fees and slashed stakes). These have no dependencies on other contracts.
 
