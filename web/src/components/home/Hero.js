@@ -3,6 +3,7 @@ import { Chip } from "@/components/ui/Chip";
 import { HexPanel } from "@/components/ui/HexPanel";
 import { GlassArc } from "@/components/art/GlassArc";
 import { Ring } from "@/components/art/Ring";
+import { LogoMark } from "@/components/ui/Logo";
 
 /** Landing hero: the title slide of the template, for VaultHunt. */
 export function Hero() {
@@ -13,6 +14,7 @@ export function Hero() {
       <GlassArc className="absolute left-[2%] top-[3%] w-20 sm:w-28 md:w-32 xl:w-44 2xl:w-56" />
       <GlassArc flip className="absolute bottom-[3%] right-[2%] hidden w-32 md:block xl:w-44 2xl:w-56" />
 
+      <LogoMark size={88} className="relative z-10 mb-6 size-[72px] sm:size-[88px]" />
       <h1 className="display-xl relative z-10">VaultHunt</h1>
 
       <div className="relative z-10 mt-8 sm:mt-10">

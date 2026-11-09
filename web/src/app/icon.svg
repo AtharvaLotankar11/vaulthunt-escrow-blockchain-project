@@ -1,9 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" fill="#020020"/>
-  <g stroke="#ff01dc" stroke-width="3.2" stroke-linecap="round">
-    <line x1="16" y1="5" x2="16" y2="27"/>
-    <line x1="5" y1="16" x2="27" y2="16"/>
-    <line x1="8.2" y1="8.2" x2="23.8" y2="23.8"/>
-    <line x1="23.8" y1="8.2" x2="8.2" y2="23.8"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><title>VaultHunt</title><defs><linearGradient id="vhi" x1="30" y1="14" x2="226" y2="242" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#5CE1E6"/><stop offset="0.5" stop-color="#3F5CFF"/><stop offset="1" stop-color="#7A2FE6"/></linearGradient></defs><path d="M128.0 25.0 L217.2 76.5 L217.2 179.5 L128.0 231.0 L38.8 179.5 L38.8 76.5 Z" fill="url(#vhi)" stroke="url(#vhi)" stroke-width="18" stroke-linejoin="round"/><path d="M128.0 52.0 L193.8 90.0 L193.8 166.0 L128.0 204.0 L62.2 166.0 L62.2 90.0 Z" fill="none" stroke="#FFFFFF" stroke-opacity="0.32" stroke-width="3.5" stroke-linejoin="round"/><circle cx="128" cy="124" r="38" fill="none" stroke="#FFFFFF" stroke-width="5"/><path d="M102 124 L76 124 M154 124 L180 124 M128 98 L128 72" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/><circle cx="128" cy="124" r="18.5" fill="#FFFFFF"/><path d="M119 135 L137 135 L142 175 L114 175 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"/></svg>

@@ -211,3 +211,9 @@ table.data td { padding: 0.75rem 0.75rem 0.75rem 0; border-top: 1px solid rgb(25
 
 /* alerts: white text with a magenta bar (magenta stays on bars, dashes and focus only) */
 .note-alert { border-left: 4px solid var(--color-accent); padding-left: 0.75rem; color: #fff; }
+
+/* footer */
+.footer-label { display: inline-block; border-left: 6px solid var(--color-accent); padding-left: 0.75rem; font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #fff; }
+.footer-link { color: var(--color-muted); }
+.footer-link:hover { color: #fff; text-decoration: underline; }
+.roll { display: inline-block; background: var(--color-surface); padding: 0.125rem 0.625rem; font-size: 0.75rem; letter-spacing: 0.04em; white-space: nowrap; }

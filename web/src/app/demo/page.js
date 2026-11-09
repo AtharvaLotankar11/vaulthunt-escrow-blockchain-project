@@ -1,7 +1,7 @@
 import { DemoRunner } from "@/components/demo/DemoRunner";
 import { PageHeader } from "@/components/ui/PageHeader";
 
-export const metadata = { title: "Demo mode: VaultHunt" };
+export const metadata = { title: "Demo mode" };
 
 export default function DemoPage() {
   return (

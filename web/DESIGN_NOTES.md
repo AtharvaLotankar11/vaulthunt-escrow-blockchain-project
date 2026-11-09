@@ -69,3 +69,9 @@ Done in code and covered by the automated test where possible:
 - Free RPC plans may refuse large event queries. The leaderboard no longer uses events, and the live feed falls back to rebuilding itself from the contracts' own state.
 - On Sepolia the demo time-travel buttons and Demo Mode do not exist (they need Anvil), so deadlines are real: review, reveal and dispute windows are 10 minutes, jury commit and reveal windows 5 minutes.
 - Transactions show a block explorer link in their message, and the footer lists the verified contracts.
+
+## Brand (logo, browser tab, footer)
+- **Logo:** a vault hexagon with a keyhole and a crosshair; "Vault" in a lighter weight, "Hunt" in bold cyan. Files for every use are in `public/brand` (SVG and transparent PNG; mark, horizontal and stacked, dark and light). The React version is `src/components/ui/Logo.js` (`Logo` for the header, `LogoFull`, `LogoMark`). The name is drawn as outlines, so it never depends on an installed font.
+- **Browser tab:** `src/app/icon.svg` (carries a `<title>` so the icon has an accessible name), `favicon.ico`, `apple-icon.png`, `manifest.js` (name, theme colour, icons) and `opengraph-image.png` (the card shown when the link is shared). Tab titles are "<page> | VaultHunt": set in `src/app/layout.js` (template) and one small `layout.js` per section.
+- **Footer:** logo, tagline, links, the team (name and roll number), course line, verified-contract links on Sepolia, and the testnet notice. Team details live in the `TEAM` list in `src/components/layout/Footer.js`; the author names in the page metadata are in `src/app/layout.js`.
+- **Colours:** cyan `#5CE1E6`, indigo `#131187`, blue `#3B3BF0`; mark gradient `#5CE1E6`, `#3F5CFF`, `#7A2FE6`. Magenta stays for bars and focus only.

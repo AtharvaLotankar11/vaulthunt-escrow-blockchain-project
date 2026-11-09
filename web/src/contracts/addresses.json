@@ -10,17 +10,5 @@
     "ProgramDirectory": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
     "Deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
     "DeploymentBlock": 0
-  },
-  "11155111": {
-    "BountyToken": "0xCC21a5053aA68448c8d3f834f871AB2e4ABe548b",
-    "PlatformTreasury": "0xABbB286C7004AC155107339a949E1c31Fb1f2f3A",
-    "ReputationSBT": "0xF03bEAE3815844a43F8B6E42f67597Bc73dA07Ef",
-    "BountyFactory": "0x3818c819040026d00FCb8b48F087ECcC2fC610f2",
-    "BountyEscrowImplementation": "0x0988548a351306f8902Fce08fE588bD5635E3767",
-    "ReportRegistry": "0xDd9567FB62acaAd7443676cBF818E68c9307384F",
-    "DisputeCourt": "0x1Cba892C2375a0d5546EdE336Df45cB27Ca3d30f",
-    "ProgramDirectory": "0x227B36b2a0650F9Ddf5e8C16b9ac5e4fBB935B7E",
-    "Deployer": "0xB5D97277532eb488e20F656ec3BACdbA8F8Db438",
-    "DeploymentBlock": 12092380
   }
 }

@@ -5,10 +5,20 @@ import { LiveFeed } from "@/components/layout/LiveFeed";
 import { Nav } from "@/components/layout/Nav";
 import { Providers } from "./providers";
 
+const DESCRIPTION =
+  "A decentralized escrow system for bug bounty hunters. Locked rewards, encrypted reports and jury-based disputes: lock it, prove it, get paid.";
+
 export const metadata = {
-  title: "VaultHunt: trustless bug bounties",
-  description:
-    "A decentralized escrow system for bug bounty hunters. Locked rewards, encrypted reports, jury-based disputes.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  // The browser tab shows "<page> | VaultHunt"; the home page shows the full tagline.
+  title: { default: "VaultHunt: fair bounties for bug hunters", template: "%s | VaultHunt" },
+  description: DESCRIPTION,
+  applicationName: "VaultHunt",
+  authors: [{ name: "Atharva Lotankar" }, { name: "Vaishnavi Avhad" }, { name: "Bhoomi Naik" }],
+  creator: "Atharva Lotankar, Vaishnavi Avhad and Bhoomi Naik",
+  keywords: ["VaultHunt", "bug bounty", "escrow", "blockchain", "Ethereum", "smart contracts", "Sepolia"],
+  openGraph: { title: "VaultHunt: fair bounties for bug hunters", description: DESCRIPTION, siteName: "VaultHunt", type: "website" },
+  twitter: { card: "summary_large_image", title: "VaultHunt: fair bounties for bug hunters", description: DESCRIPTION },
 };
 
 export const viewport = {
