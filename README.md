@@ -1,5 +1,7 @@
 # VaultHunt
 
+**Live demo:** https://web-two-mu-mq1v8vxfty.vercel.app (Sepolia test network, play money only)
+
 **A decentralized escrow system for bug bounty hunters.** A company locks a reward in its own on-chain vault. A hunter proves, without revealing the bug, that they found it first. The report is encrypted so only the company can read it. If the company rejects or ignores it, a randomly drawn, staked jury decides, and the verdict pays out by code.
 
 > Testnet prototype for the Blockchain Technology course (26ITPC71, Semester VII). **Not audited. Never use real funds.**
