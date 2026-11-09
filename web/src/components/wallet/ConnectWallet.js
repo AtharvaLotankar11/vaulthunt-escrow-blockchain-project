@@ -32,7 +32,8 @@ export function ConnectWallet() {
       <div className="flex items-center gap-2">
         {walletMissing ? (
           <a href="https://metamask.io/download" target="_blank" rel="noreferrer" className="chip chip--sm chip--alert">
-            Install MetaMask
+            <span className="hidden sm:inline">Install MetaMask</span>
+            <span className="sm:hidden">Install MM</span>
           </a>
         ) : (
           <button
@@ -41,7 +42,17 @@ export function ConnectWallet() {
             disabled={isPending}
             onClick={() => connect({ connector: connectors[0], chainId: defaultChain.id })}
           >
-            {isPending ? "Confirm in wallet…" : "Connect wallet"}
+            {isPending ? (
+              <>
+                <span className="hidden sm:inline">Confirm in wallet…</span>
+                <span className="sm:hidden">Confirming…</span>
+              </>
+            ) : (
+              <>
+                <span className="hidden sm:inline">Connect wallet</span>
+                <span className="sm:hidden">Connect</span>
+              </>
+            )}
           </button>
         )}
         {error && !walletMissing && (
@@ -62,7 +73,17 @@ export function ConnectWallet() {
         disabled={isSwitching}
         onClick={() => switchChain({ chainId: defaultChain.id })}
       >
-        {isSwitching ? "Switching…" : `Wrong network (${walletChainId}): switch to ${defaultChain.name}`}
+        {isSwitching ? (
+          <>
+            <span className="hidden sm:inline">Switching…</span>
+            <span className="sm:hidden">Switching…</span>
+          </>
+        ) : (
+          <>
+            <span className="hidden sm:inline">Wrong network ({walletChainId}): switch to {defaultChain.name}</span>
+            <span className="sm:hidden">Switch to {defaultChain.name}</span>
+          </>
+        )}
       </button>
     );
   }
