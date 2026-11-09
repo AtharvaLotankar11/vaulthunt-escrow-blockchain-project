@@ -7,6 +7,12 @@ export const runtime = "nodejs";
 const LOCAL = /^local-([a-f0-9]{64})$/;
 const REAL = /^[A-Za-z0-9]{46,100}$/;
 
+function gateways() {
+  return [process.env.IPFS_GATEWAY, "https://gateway.pinata.cloud/ipfs", "https://ipfs.io/ipfs", "https://dweb.link/ipfs"]
+    .filter(Boolean)
+    .map((url) => url.trim().replace(/\/+$/, ""));
+}
+
 export async function GET(_request, { params }) {
   const { cid } = await params;
   const headers = { "content-type": "application/json", "cache-control": "public, max-age=31536000, immutable" };
@@ -22,10 +28,19 @@ export async function GET(_request, { params }) {
   }
 
   if (REAL.test(cid)) {
-    const gateway = process.env.IPFS_GATEWAY || "https://gateway.pinata.cloud/ipfs";
-    const upstream = await fetch(`${gateway}/${cid}`);
-    if (!upstream.ok) return Response.json({ error: "Not found on IPFS" }, { status: 404 });
-    return new Response(await upstream.text(), { headers });
+    // Try each gateway in turn; skip any that fails, times out or answers with something that is not JSON.
+    for (const gateway of gateways()) {
+      try {
+        const upstream = await fetch(`${gateway}/${cid}`, { signal: AbortSignal.timeout(8000) });
+        if (!upstream.ok) continue;
+        const text = await upstream.text();
+        JSON.parse(text);
+        return new Response(text, { headers });
+      } catch {
+        continue;
+      }
+    }
+    return Response.json({ error: "Not found on IPFS" }, { status: 404 });
   }
 
   return Response.json({ error: "Invalid content id" }, { status: 400 });
