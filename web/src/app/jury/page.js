@@ -7,6 +7,7 @@ import { Chip } from "@/components/ui/Chip";
 import { Countdown } from "@/components/ui/Countdown";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ChainDown, NoDeployment, StateMessage } from "@/components/ui/StateMessage";
+import { AddressName } from "@/components/ui/AddressName";
 import { TokenBar } from "@/components/ui/TokenBar";
 import { NeedWallet } from "@/components/wallet/NeedWallet";
 import { CASE } from "@/lib/chain";
@@ -47,7 +48,7 @@ export default function JuryPage() {
                     return (
                       <tr key={c.id}>
                         <td><Link className="underline" href={`/jury/${c.id}`}>#{c.id}</Link></td>
-                        <td>#{c.reportId} · hunter {shortAddress(c.hunter)}</td>
+                        <td>#{c.reportId} · hunter <AddressName address={c.hunter} /></td>
                         <td><Chip size="sm" tone={c.status === CASE.Resolved ? "glow" : "alert"}>{c.status === CASE.Resolved ? "Resolved" : "Open"}</Chip></td>
                         <td>{phase} {c.status === CASE.Voting && now !== undefined && now <= c.revealDeadline ? <span className="text-muted">(<Countdown to={now <= c.commitDeadline ? c.commitDeadline : c.revealDeadline} now={now} />)</span> : null}</td>
                         <td>{seat ? <Chip size="sm" tone="glow">You are a juror</Chip> : "-"}</td>

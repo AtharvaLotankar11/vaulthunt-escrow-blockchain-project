@@ -12,6 +12,7 @@ import { S, SEVERITY, awaitingCompany } from "@/lib/chain";
 import { abis } from "@/lib/contracts";
 import { decryptReport } from "@/lib/crypto";
 import { eth, shortAddress } from "@/lib/format";
+import { AddressName } from "@/components/ui/AddressName";
 import { useBook } from "@/lib/hooks";
 import { getJson } from "@/lib/ipfs";
 import { companyKeys } from "@/lib/secrets";
@@ -52,7 +53,7 @@ export function CompanyReport({ report, program, now, registryConfig }) {
           <StatusChip status={report.status} />
           {report.status >= S.Revealed && <Chip size="sm">Claims {SEVERITY[report.claimedSeverity]}</Chip>}
         </div>
-        <span className="text-sm text-muted">Hunter {shortAddress(report.hunter)}</span>
+        <span className="text-sm text-muted">Hunter <AddressName address={report.hunter} /></span>
       </div>
 
       {report.status === S.Committed && <p className="text-muted">Committed, not revealed yet. The hunter still has to encrypt and reveal the report.</p>}

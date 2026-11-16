@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Chip } from "@/components/ui/Chip";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ChainDown, NoDeployment, StateMessage } from "@/components/ui/StateMessage";
+import { AddressName } from "@/components/ui/AddressName";
 import { LEVELS, levelFor } from "@/lib/chain";
 import { shortAddress } from "@/lib/format";
 import { useBook, useLeaderboard } from "@/lib/hooks";
@@ -33,7 +34,7 @@ export default function LeaderboardPage() {
                 return (
                   <tr key={row.address}>
                     <td className="display-m !text-3xl">{i + 1}</td>
-                    <td><Link className="underline" href={`/profile/${row.address}`}>{shortAddress(row.address)}</Link></td>
+                    <td><Link className="underline" href={`/profile/${row.address}`}><AddressName address={row.address} /></Link></td>
                     <td><Chip size="sm" tone={level >= 3 ? "glow" : undefined}>{LEVELS[level - 1]}</Chip></td>
                     <td>{row.xp}</td>
                   </tr>

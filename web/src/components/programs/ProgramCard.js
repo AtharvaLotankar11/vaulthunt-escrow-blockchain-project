@@ -6,6 +6,7 @@ import { NotchedCard } from "@/components/ui/NotchedCard";
 import { VaultBar } from "@/components/programs/VaultBar";
 import { useProfile } from "@/lib/hooks";
 import { eth, shortAddress } from "@/lib/format";
+import { AddressName } from "@/components/ui/AddressName";
 
 export function ProgramCard({ program }) {
   const { data: profile } = useProfile(program.profileURI);
@@ -16,7 +17,7 @@ export function ProgramCard({ program }) {
           <h2 className="display-m !text-3xl">{profile?.name ?? `Program #${program.id}`}</h2>
           <Chip size="sm" tone={program.profileURI ? "glow" : "alert"}>{program.profileURI ? "Key published" : "No key yet"}</Chip>
         </div>
-        <p className="mt-2 text-sm text-muted">by {shortAddress(program.owner)}</p>
+        <p className="mt-2 text-sm text-muted">by <AddressName address={program.owner} /></p>
 
         <p className="display-m mt-8 !text-4xl">{eth(program.balance)} ETH</p>
         <div className="mt-4">

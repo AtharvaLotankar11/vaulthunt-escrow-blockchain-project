@@ -1,7 +1,9 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { useAccount, useConnect, useDisconnect, useSwitchChain } from "wagmi";
 import { useIsClient } from "@/lib/useIsClient";
+import { useWalletName } from "@/lib/useWalletName";
 import { defaultChain } from "@/lib/wagmi";
 
 function shorten(address) {
@@ -9,9 +11,9 @@ function shorten(address) {
 }
 
 /**
- * Wallet button in the VaultHunt chip style. States: Connect, Connecting, Install MetaMask,
- * Wrong network (one click asks the wallet to switch to or add Anvil), or network + account
- * with a small menu (copy address, disconnect). Built on wagmi hooks only.
+ * Wallet button in the VaultHunt chip style. Shows the user's display name
+ * (ENS name or locally-saved nickname) instead of the raw address.
+ * Copy still copies the full public address.
  */
 export function ConnectWallet() {
   const isClient = useIsClient();
@@ -19,6 +21,16 @@ export function ConnectWallet() {
   const { connect, connectors, isPending, error } = useConnect();
   const { disconnect } = useDisconnect();
   const { switchChain, isPending: isSwitching } = useSwitchChain();
+  const { displayName, setLocalName } = useWalletName(address);
+
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState("");
+  const inputRef = useRef(null);
+
+  // Auto-focus the input when editing starts
+  useEffect(() => {
+    if (editing && inputRef.current) inputRef.current.focus();
+  }, [editing]);
 
   // Same markup on the server and on the first client render (no hydration mismatch).
   if (!isClient) {
@@ -88,16 +100,58 @@ export function ConnectWallet() {
     );
   }
 
+  // Show display name (ENS or local nickname), fall back to shortened address
+  const label = displayName || shorten(address);
+
+  const handleSaveName = () => {
+    const trimmed = draft.trim();
+    setLocalName(trimmed || null);
+    setEditing(false);
+  };
+
   return (
     <div className="flex items-center gap-2">
       <span className="chip chip--sm hidden sm:inline-flex">{chain.name}</span>
       <details className="relative">
-        <summary className="chip chip--sm chip--glow cursor-pointer list-none">{shorten(address)}</summary>
-        <div className="absolute right-0 top-full z-40 mt-2 w-64 border border-white/15 bg-bg p-4">
+        <summary className="chip chip--sm chip--glow cursor-pointer list-none">{label}</summary>
+        <div className="absolute right-0 top-full z-40 mt-2 w-72 border border-white/15 bg-bg p-4">
           <p className="break-all text-sm text-muted">{address}</p>
-          <div className="mt-4 flex gap-2">
+
+          {/* Inline name editor */}
+          {editing ? (
+            <div className="mt-3 flex gap-2">
+              <input
+                ref={inputRef}
+                type="text"
+                className="min-w-0 flex-1 border border-white/20 bg-white/5 px-2 py-1 text-sm text-white outline-none focus:border-accent"
+                placeholder="Enter display name"
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") handleSaveName(); if (e.key === "Escape") setEditing(false); }}
+                maxLength={32}
+              />
+              <button type="button" className="btn btn--ghost min-h-8! px-2! text-xs" onClick={handleSaveName}>
+                Save
+              </button>
+            </div>
+          ) : (
+            displayName && (
+              <p className="mt-1 text-xs text-accent">
+                Display name: <strong>{displayName}</strong>
+              </p>
+            )
+          )}
+
+          <div className="mt-4 flex flex-wrap gap-2">
             <button type="button" className="btn btn--ghost min-h-10! px-3! text-sm" onClick={() => navigator.clipboard?.writeText(address)}>
               Copy
+            </button>
+            <button
+              type="button"
+              className="btn btn--ghost min-h-10! px-3! text-sm"
+              onClick={() => { setDraft(displayName || ""); setEditing(true); }}
+            >
+              {displayName ? "Edit name" : "Set name"}
             </button>
             <button type="button" className="btn btn--ghost min-h-10! px-3! text-sm" onClick={() => disconnect()}>
               Disconnect

@@ -12,6 +12,7 @@ import { StatusChip } from "@/components/ui/StatusChip";
 import { ChainDown, NoDeployment } from "@/components/ui/StateMessage";
 import { LEVELS, LEVEL_XP, S, SEVERITY, levelFor } from "@/lib/chain";
 import { shortAddress } from "@/lib/format";
+import { useWalletName } from "@/lib/useWalletName";
 import { useBook, useHunterProfile, useReports } from "@/lib/hooks";
 
 export default function ProfilePage() {
@@ -19,6 +20,7 @@ export default function ProfilePage() {
   const { chainId, book } = useBook();
   const { data: profile, isError } = useHunterProfile(address);
   const { data: reports } = useReports();
+  const { displayName } = useWalletName(address);
 
   if (!book) return <section className="page-x py-12"><NoDeployment chainId={chainId} /></section>;
   if (isError) return <section className="page-x py-12"><ChainDown /></section>;
@@ -33,7 +35,7 @@ export default function ProfilePage() {
 
   return (
     <section className="page-x py-12">
-      <PageHeader chip="Hunter profile" title={shortAddress(address)} />
+      <PageHeader chip="Hunter profile" title={displayName || shortAddress(address)} subtitle={displayName ? shortAddress(address) : undefined} />
 
       <div className="grid gap-6 xl:grid-cols-[1fr_1.2fr] xl:items-center">
         <HexPanel glow className="mx-auto w-full max-w-md" innerClassName="py-14 text-center">
